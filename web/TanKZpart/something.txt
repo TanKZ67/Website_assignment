@@ -7,5 +7,6 @@ foreign key haven't done yet
 photo got problem can't upload to sql
 change password wait for devon
 when change useraccount already notice must change to u already change useraccount
+user_id session problem
 
 sdads
