@@ -637,40 +637,29 @@
         <button class="add-to-cart-button" onclick="addToCartFromModal()">Add to Cart</button>
     </div>
 </div>
-    <?php
-    require_once 'db_connection.php';  // 引入数据库连接
-    
-    try {
-        // 查询产品数据
-        $stmt = $conn->prepare("SELECT * FROM products");
-        $stmt->execute();
-        
-        // 设置结果集为关联数组
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        if (count($products) > 0) {
-            foreach ($products as $product) {
-                // 解码JSON格式的颜色数据
-                $colors = json_decode($product['colors'], true);
-                $color_attr = htmlspecialchars(json_encode($colors), ENT_QUOTES, 'UTF-8');
-                
-                echo '
-                <div class="product" data-category="'.$product['category'].'"
-                    data-colors=\''.$color_attr.'\'
-                    data-description="'.$product['description'].'"
-                    onclick="showModal(\''.addslashes($product['name']).'\', '.$product['price'].', \''.$product['main_image'].'\', this)">
-                    <img src="'.$product['main_image'].'" alt="'.$product['name'].'">
-                    <p>'.$product['name'].'</p>
-                    <p style="font-size:20px;margin:0px">$'.$product['price'].'</p>
-                </div>';
-            }
-        } else {
-            echo '<p style="color:white;font-size:20px;">没有找到产品</p>';
-        }
-    } catch(PDOException $e) {
-        echo "数据库查询错误: " . $e->getMessage();
-    }
-    ?>
+<?php
+require_once 'db_connection.php';
+
+$stmt = $conn->prepare("SELECT id, name, price, main_image, description, stock, category, colors FROM products");
+$stmt->execute();
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($products as $product) {
+    $colors = json_decode($product['colors'], true);
+    echo '
+    <div class="product" 
+        data-id="'.$product['id'].'"
+        data-category="'.$product['category'].'"
+        data-colors=\''.htmlspecialchars(json_encode($colors), ENT_QUOTES).'\'
+        data-description="'.htmlspecialchars($product['description'], ENT_QUOTES).'"
+        data-stock="'.$product['stock'].'"
+        onclick="showModal(\''.addslashes($product['name']).'\', '.$product['price'].', \''.$product['main_image'].'\', this)">
+        <img src="'.$product['main_image'].'">
+        <p>'.$product['name'].'</p>
+        <p>$'.$product['price'].'</p>
+    </div>';
+}
+?>
 </div>
 
     <script>
@@ -750,7 +739,7 @@
             });
 
             // 显示库存信息
-            const stock = productElement.getAttribute('data-stock') || 10; // 默认库存为 10
+            const stock = productElement.getAttribute('data-stock'); // 直接读取数据库中的值
             const stockInfo = document.createElement('p');
             stockInfo.textContent = `Stock: ${stock}`;
             stockInfo.style.marginTop = '10px';
@@ -798,63 +787,65 @@
         });
 
         function addToCartFromModal() {
-            if (!selectedSize) {
-                alert('Please select a size.');
-                return;
-            } else if (!selectedColor) {
-                alert('Please select a color.')
-                return;
-            }
+    if (!selectedSize) {
+        alert('Please select a size.');
+        return;
+    } else if (!selectedColor) {
+        alert('Please select a color.')
+        return;
+    }
 
-            // 从 localStorage 中加载现有的购物车数据
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    // From localStorage load existing cart data
+    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
-            const modal = document.getElementById('buyModal');
-            const modalName = document.getElementById('modalName').textContent.split(' - ')[0];
-            const modalPrice = parseFloat(document.getElementById('modalName').textContent.split(' - $')[1]);
-            const modalImage = document.getElementById('modalImage').src;
+    const modal = document.getElementById('buyModal');
+    const modalName = document.getElementById('modalName').textContent.split(' - ')[0];
+    const modalPrice = parseFloat(document.getElementById('modalName').textContent.split(' - $')[1]);
+    const modalImage = document.getElementById('modalImage').src;
 
-            // 获取库存数量
-            const stock = parseInt(document.querySelector('#modalDescription p').textContent.split(': ')[1], 10);
+    // Get total stock from the product (regardless of size/color)
+    const stock = parseInt(document.querySelector('#modalDescription p').textContent.split(': ')[1], 10);
 
-            // 检查购物车中是否已经存在该商品
-            const existingItem = cartItems.find(item =>
-                item.name === modalName &&
-                item.size === selectedSize &&
-                item.color === selectedColor
-            );
+    // Calculate total quantity of this product already in cart (sum all variants)
+    const existingQuantity = cartItems
+        .filter(item => item.name === modalName)
+        .reduce((sum, item) => sum + item.quantity, 0);
 
-            // 计算总数量（已存在数量 + 新选择的数量）
-            const totalQuantity = (existingItem ? existingItem.quantity : 0) + quantity;
+    // Check if adding this quantity would exceed stock
+    if (existingQuantity + quantity > stock) {
+        alert(`You cannot add more than ${stock} items of this product`);
+        return;
+    }
 
-            // 检查是否超过库存
-            if (totalQuantity > stock) {
-                alert(`You cannot add more than ${stock} items of this product.`);
-                return;
-            }
+    // Check if this exact variant (name+size+color) already exists in cart
+    const existingItem = cartItems.find(item =>
+        item.name === modalName &&
+        item.size === selectedSize &&
+        item.color === selectedColor
+    );
 
-            // 如果商品已存在，更新数量
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                // 如果商品不存在，添加到购物车
-                cartItems.push({
-                    name: modalName,
-                    price: modalPrice,
-                    size: selectedSize,
-                    color: selectedColor,
-                    image: modalImage,
-                    quantity: quantity
-                });
-            }
+    if (existingItem) {
+        // Update existing variant
+        existingItem.quantity += quantity;
+    } else {
+        // Add new variant
+        cartItems.push({
+            name: modalName,
+            price: modalPrice,
+            size: selectedSize,
+            color: selectedColor,
+            image: modalImage,
+            quantity: quantity
+        });
+    }
 
-            // 保存更新后的购物车数据到 localStorage
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    // Save updated cart data to localStorage
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
 
-            // 更新购物车显示
-            updateCartDisplay();
-            closeModal(); // 关闭弹窗
-        }
+    // Update cart display
+    updateCartDisplay();
+    closeModal(); // Close modal
+}
 
         // 更新购物车显示
         function updateCartDisplay() {
@@ -982,4 +973,4 @@
 
 </body>
 
-</html>
+</html> 

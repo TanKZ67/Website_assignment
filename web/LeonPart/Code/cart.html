@@ -195,6 +195,40 @@
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
+        
+        function updateStockAfterPayment() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            
+            if (cartItems.length === 0) {
+                return;
+            }
+            
+            fetch('update_stock.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    items: cartItems.map(item => ({
+                        name: item.name,
+                        quantity: item.quantity
+                    }))
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Stock updated successfully');
+                    // 清空购物车
+                    localStorage.removeItem('cartItems');
+                } else {
+                    console.error('Error updating stock:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
         // 根据支付方式更新表单字段
         function updatePaymentFields() {
             const paymentMethod = document.getElementById('payment_method').value;
@@ -462,6 +496,7 @@ function validateForm() {
                         // 显示支付成功提示
                         document.getElementById('successMessage').style.display = 'block';
                         document.getElementById('paymentModal').style.display = 'none';
+                        updateStockAfterPayment();
 
                         // 从购物车中移除已付款的商品
                         const updatedCartItems = cartItems.filter((item, index) => {
@@ -491,4 +526,4 @@ function validateForm() {
     </script>
 </body>
 
-</html>
+</html> 
