@@ -60,7 +60,7 @@ if (isset($_POST['update_product'])) {
     if (!empty($_FILES['product_image']['name'])) {
         $product_image = $_FILES['product_image']['name'];
         $product_image_tmp_name = $_FILES['product_image']['tmp_name'];
-        $main_image_path = '/' . $image_folder . basename($product_image);
+        $main_image_path =  $image_folder . basename($product_image);
 
         if ($_FILES['product_image']['error'] === UPLOAD_ERR_OK) {
             if (move_uploaded_file($product_image_tmp_name, $image_folder . $product_image)) {
@@ -89,7 +89,7 @@ if (isset($_POST['update_product'])) {
             $newColorFile = $_FILES['color_images']['name'][$index];
             $newColorTmp = $_FILES['color_images']['tmp_name'][$index];
 
-            $newColorPath = '/' . $image_folder . basename($newColorFile);
+            $newColorPath =  $image_folder . basename($newColorFile);
 
             if (move_uploaded_file($newColorTmp, $image_folder . $newColorFile)) {
                 $existingImage = $newColorPath; // replace old image path with new
@@ -111,7 +111,7 @@ if (isset($_POST['update_product'])) {
                 $colorFile = $_FILES['color_images']['name'][$index] ?? '';
                 $colorTmp = $_FILES['color_images']['tmp_name'][$index] ?? '';
                 if (!empty($colorFile)) {
-                    $colorPath = '/' . $image_folder . basename($colorFile);
+                    $colorPath =  $image_folder . basename($colorFile);
                     move_uploaded_file($colorTmp, $image_folder . $colorFile);
                 } else {
                     $colorPath = '';
