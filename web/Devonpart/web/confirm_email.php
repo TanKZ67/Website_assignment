@@ -5,7 +5,7 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
     $token = $_GET['token'];
     $email = $_GET['email'];
 
-    $stmt = $conn->prepare("SELECT username, password_hash FROM pending_users WHERE email = ? AND token = ?");
+    $stmt = $conn->prepare("SELECT user_account, password_hash FROM pending_users WHERE email = ? AND token = ?");
     $stmt->bind_param("ss", $email, $token);
     $stmt->execute();
     $result = $stmt->get_result();
