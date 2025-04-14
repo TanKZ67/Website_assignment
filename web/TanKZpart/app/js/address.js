@@ -9,6 +9,9 @@ document.getElementById("savebutton").addEventListener("click", function () {
 
 document.getElementById("cancelbutton2").addEventListener("click", function () {
     document.getElementById("layerNA1").style.display = "none";
+    setTimeout(function () {
+        location.reload();
+    }, 500);
 })
 
 

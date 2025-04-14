@@ -1,11 +1,10 @@
-change email address valified there need cancel and resent button
 change phone number need cancel and reset password   (if can also do verified)
 when click email and phonenumber body try to blur together
 if don't have img what will be happend?
 address invalid function
+address delete function
+when add new address,it must show neww address info ,not click refresh 
 foreign key haven't done yet(not sure is this really done)
 change password wait for devon
 when change useraccount already, notice must change to u already change useraccount
 user_id session problem
-
-sdads
