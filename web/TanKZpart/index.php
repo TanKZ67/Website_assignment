@@ -64,9 +64,9 @@ include 'app/lib/query.php';
             <form method="post" action="app/page/updateUser.php" target="hiddenframe">
                 <label for="user_Account_label" class="userAccountLabel">User Account</label>
                 <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO" ?>">
-
+                <?php if user_account_check  ?>
                 <p class="userAccountNotices">User Account can only be changed once.</p>
-
+                
 
                 <div class="moveDown">
 
