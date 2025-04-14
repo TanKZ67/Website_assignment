@@ -24,7 +24,6 @@ include 'app/lib/query.php';
     <div class="LeftSideBodden">
 
         <img src="app/image/<?php echo basename($row['picture']); ?>" alt="Current Image" class="UserImage2">
-        <img src="app/image/importan_icon/<?php echo (!empty($row['picture']) && file_exists("app/image/" . $row['picture'])) ? basename($row['picture']) : 'importan_icon/userIcon.png'; ?>" alt="Current Image" class="UserImage2">
         <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "NO", 0, 10, 'UTF-8') . "...."; ?></P>
         <a href="index.php" class="editprofile">Edit Profile</a>
         <hr style="margin-top: 40px;" color="white">
