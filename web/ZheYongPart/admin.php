@@ -25,7 +25,7 @@ if (isset($_POST['add_product'])) {
    $product_image_tmp_name = $_FILES['product_image']['tmp_name'] ?? '';
    move_uploaded_file($tmp_name, "W1Demo/image/" . $product_image);
    $upload_folder = 'W1Demo/image/';
-   $main_image_url =  $main_image_path; // for displaying later
+   $main_image_url =  '/' . $main_image_path; // for displaying later
 
 
    if (empty($product_name) || strlen($product_name) < 3) {
@@ -54,7 +54,7 @@ if (isset($_POST['add_product'])) {
       $errors['description'] = 'Product description is required!';
    }
 
-   if (empty($quantity) || !filter_var($quantity, FILTER_VALIDATE_INT) || $quantity <= 0 || $quantity > 100) {
+   if (empty($quantity) || !filter_var($quantity, FILTER_VALIDATE_INT) || $quantity <= 0 || $quantity > 1000) {
       $errors['quantity'] = 'Valid product quantity is required!';
    }
 
@@ -65,7 +65,7 @@ if (isset($_POST['add_product'])) {
       // Get the uploaded file's temporary name and generate the new file path
       $product_image = $_FILES['product_image']['name'];
       $product_image_tmp_name = $_FILES['product_image']['tmp_name'];
-      $main_image_path =  $upload_folder . basename($product_image);
+      $main_image_path = '/' . $upload_folder . basename($product_image);
 
       // Move the uploaded file to the desired location
       if (move_uploaded_file($product_image_tmp_name, $upload_folder . $product_image)) {
@@ -91,7 +91,7 @@ if (isset($_POST['add_product'])) {
 
          if (!empty($color_name) && !empty($color_image)) {
             // Define color image path
-            $color_image_path =  $upload_folder . basename($color_image);
+            $color_image_path =  '/' .$upload_folder . basename($color_image);
 
             // Move color image to the upload folder
             if (move_uploaded_file($color_image_tmp_name, $upload_folder . $color_image)) {
