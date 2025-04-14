@@ -13,8 +13,8 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
 
-        $stmt_insert = $conn->prepare("INSERT INTO user_profile (user_account, email, password_hash) VALUES (?, ?, ?)");
-        $stmt_insert->bind_param("sss", $row['user_account'], $email, $row['password_hash']);
+        $stmt_insert = $conn->prepare("INSERT INTO user_profile (user_account,user_account_old, email, password_hash) VALUES (?,?, ?, ?)");
+        $stmt_insert->bind_param("ssss", $row['username'],$row['username'], $email, $row['password_hash']);
         $stmt_insert->execute();
 
         $stmt_delete = $conn->prepare("DELETE FROM pending_users WHERE email = ?");
