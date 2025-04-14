@@ -6,7 +6,7 @@ $user_id = $_SESSION["user_id"];
 
 $picture=$_FILES["picture"]["name"];
 $image_tmp=$_FILES["picture"]["tmp_name"];
-$image_folder = "c:/xampp/htdocs/a/code_ass/web/app/image/" . $picture;
+$image_folder = "c:\xampp\htdocs\a\Website_assignment\web\TanKZpart\app\image" . $picture;
 
 
 if (move_uploaded_file($image_tmp, $image_folder)) {

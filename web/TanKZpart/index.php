@@ -56,7 +56,6 @@ include 'app/lib/query.php';
             <div class="imageUpdateBoss" id="imageUpdate">
                 <img src="app/image/<?php echo basename($row['picture']); ?>" alt="Current Image" class="UserImage">
                 <input type="file" accept="image/*" class="imgaccept" name="picture" id="imageupload">
-
             </div>
         </form>
 
