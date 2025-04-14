@@ -48,7 +48,7 @@ if (isset($_POST['update_product'])) {
         $errors['description'] = 'Product description is required!';
     }
 
-    if (empty($quantity) || !filter_var($quantity, FILTER_VALIDATE_INT) || $quantity <= 0 || $quantity > 100) {
+    if (empty($quantity) || !filter_var($quantity, FILTER_VALIDATE_INT) || $quantity <= 0 || $quantity > 1000) {
         $errors['quantity'] = 'Valid product quantity is required!';
     }
 
