@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
 <?php
-
 session_start();
 require 'config/db.php';
 require 'email/send_email.php';
@@ -38,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute();
             }
 
-            header("Location: c:\xampp\htdocs\a\Website_assignment\web\LeonPart\Code\index.php ");
+            header("Location: a\Website_assignment\web\LeonPart\Code\index.php ");
             exit();
         } else {
             echo "<script>alert('Incorrect password');</script>";
@@ -49,7 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <title>Login</title>
