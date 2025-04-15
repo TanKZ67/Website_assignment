@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute();
             }
 
-            header("Location: dashboard.php");
+            header("Location: ../../LeonPart/Code/index.php ");
             exit();
         } else {
             echo "<script>alert('Incorrect password');</script>";
