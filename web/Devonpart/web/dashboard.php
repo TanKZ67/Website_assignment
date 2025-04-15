@@ -15,7 +15,7 @@ if (!isset($_SESSION["user_id"])) {
 <body>
 <div class="container mt-5">
     <h2>Welcome, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</h2>
-    <a href="../../LeonPart/Code/index.php " class="btn btn-danger">Logout</a>
+    <a href="logout.php" class="btn btn-danger">Logout</a>
 </div>
 </body>
 </html>
