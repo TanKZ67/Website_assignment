@@ -1,4 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
 <?php
+
 session_start();
 require 'config/db.php';
 require 'email/send_email.php';
@@ -46,8 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+
 
 <head>
     <title>Login</title>
