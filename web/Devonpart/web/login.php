@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute();
             }
 
-            header("Location: ../../LeonPart/Code/index.php ");
+            header("Location: c:\xampp\htdocs\a\Website_assignment\web\LeonPart\Code\index.php ");
             exit();
         } else {
             echo "<script>alert('Incorrect password');</script>";
