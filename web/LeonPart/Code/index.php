@@ -1,7 +1,17 @@
+<?php
+session_start();
+
+// For testing only - remove this in production
+$_SESSION['user_id'] = 28;
+
+require_once 'db_connection.php';
+?>
+
 <!DOCTYPE html>
 <html>
 
 <head>
+
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="\W1Demo\image\a7963aaa-618f-4c51-9f7e-e8699e81eed8.png">
@@ -615,58 +625,66 @@
 
 
     <div class="products">
-    <div class="overlay" id="overlay"></div>
-<div class="buy-modal" id="buyModal">
-    <button class="close-button" onclick="closeModal()">×</button>
-    <img id="modalImage" src="" alt="Product Image">
-    <p id="modalName"></p>
-    <ul id="modalDescription"></ul>
-    <div class="button-position">
-        <div class="size-buttons">
-            <button class="size-button" data-size="S">S</button>
-            <button class="size-button" data-size="M">M</button>
-            <button class="size-button" data-size="L">L</button>
-            <button class="size-button" data-size="XL">XL</button>
+        <div class="overlay" id="overlay"></div>
+        <div class="buy-modal" id="buyModal">
+            <button class="close-button" onclick="closeModal()">×</button>
+            <img id="modalImage" src="" alt="Product Image">
+            <p id="modalName"></p>
+            <ul id="modalDescription"></ul>
+            <div class="button-position">
+                <div class="size-buttons">
+                    <button class="size-button" data-size="S">S</button>
+                    <button class="size-button" data-size="M">M</button>
+                    <button class="size-button" data-size="L">L</button>
+                    <button class="size-button" data-size="XL">XL</button>
+                </div>
+                <div class="color-buttons"></div>
+                <div class="quantity-selector">
+                    <button class="quantity-button" onclick="changeQuantity(-1)">-</button>
+                    <span class="quantity-display" id="quantityDisplay">1</span>
+                    <button class="quantity-button" onclick="changeQuantity(1)">+</button>
+                </div>
+                <button class="add-to-cart-button" onclick="addToCartFromModal()">Add to Cart</button>
+            </div>
         </div>
-        <div class="color-buttons"></div>
-        <div class="quantity-selector">
-            <button class="quantity-button" onclick="changeQuantity(-1)">-</button>
-            <span class="quantity-display" id="quantityDisplay">1</span>
-            <button class="quantity-button" onclick="changeQuantity(1)">+</button>
-        </div>
-        <button class="add-to-cart-button" onclick="addToCartFromModal()">Add to Cart</button>
-    </div>
-</div>
-<?php
-require_once 'db_connection.php';
+        <?php
+        require_once 'db_connection.php';
 
-$stmt = $conn->prepare("SELECT id, name, price, main_image, description, stock, category, colors FROM products");
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $conn->prepare("SELECT id, name, price, main_image, description, stock, category, colors FROM products");
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-foreach ($products as $product) {
-    $colors = json_decode($product['colors'], true);
-    echo '
+        foreach ($products as $product) {
+            $colors = json_decode($product['colors'], true);
+            echo '
     <div class="product" 
-        data-id="'.$product['id'].'"
-        data-category="'.$product['category'].'"
-        data-colors=\''.htmlspecialchars(json_encode($colors), ENT_QUOTES).'\'
-        data-description="'.htmlspecialchars($product['description'], ENT_QUOTES).'"
-        data-stock="'.$product['stock'].'"
-        onclick="showModal(\''.addslashes($product['name']).'\', '.$product['price'].', \''.$product['main_image'].'\', this)">
-        <img src="'.$product['main_image'].'">
-        <p>'.$product['name'].'</p>
-        <p>$'.$product['price'].'</p>
+        data-id="' . $product['id'] . '"
+        data-name="' . htmlspecialchars($product['name'], ENT_QUOTES) . '"
+        data-category="' . $product['category'] . '"
+        data-colors=\'' . htmlspecialchars(json_encode($colors), ENT_QUOTES) . '\'
+        data-description="' . htmlspecialchars($product['description'], ENT_QUOTES) . '"
+        data-stock="' . $product['stock'] . '"
+        onclick="showModal(\'' . addslashes($product['name']) . '\', ' . $product['price'] . ', \'' . $product['main_image'] . '\', this)">
+        <img src="' . $product['main_image'] . '">
+        <p>' . $product['name'] . '</p>
+        <p>$' . $product['price'] . '</p>
     </div>';
-}
-?>
-</div>
+        }
+        ?>
+    </div>
 
     <script>
-        // 初始化购物车数量
         function initCartCount() {
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            document.getElementById("cartCount").textContent = cartItems.length;
+            fetch('get_cart.php')
+                .then(response => response.json())
+                .then(cartItems => {
+                    // 更新全局cartItems变量
+                    window.cartItems = cartItems;
+                    document.getElementById("cartCount").textContent = cartItems.length;
+                })
+                .catch(error => {
+                    console.error('Error fetching cart count:', error);
+                });
         }
 
         // 页面加载时初始化购物车数量
@@ -787,77 +805,101 @@ foreach ($products as $product) {
         });
 
         function addToCartFromModal() {
-    if (!selectedSize) {
-        alert('Please select a size.');
-        return;
-    } else if (!selectedColor) {
-        alert('Please select a color.')
-        return;
-    }
+            if (!selectedSize) {
+                alert('Please select a size.');
+                return;
+            } else if (!selectedColor) {
+                alert('Please select a color.')
+                return;
+            }
 
-    // From localStorage load existing cart data
-    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const modal = document.getElementById('buyModal');
+            const modalName = document.getElementById('modalName').textContent.split(' - ')[0];
+            const modalPrice = parseFloat(document.getElementById('modalName').textContent.split(' - $')[1]);
+            const modalImage = document.getElementById('modalImage').src;
+            const productElement = document.querySelector('.product[data-name="' + modalName + '"]');
+            const productId = productElement ? productElement.getAttribute('data-id') : null;
 
-    const modal = document.getElementById('buyModal');
-    const modalName = document.getElementById('modalName').textContent.split(' - ')[0];
-    const modalPrice = parseFloat(document.getElementById('modalName').textContent.split(' - $')[1]);
-    const modalImage = document.getElementById('modalImage').src;
+            if (!productId) {
+                alert('Product ID not found');
+                return;
+            }
 
-    // Get total stock from the product (regardless of size/color)
-    const stock = parseInt(document.querySelector('#modalDescription p').textContent.split(': ')[1], 10);
+            // Prepare the cart item data
+            const cartItem = {
+                product_id: parseInt(productId),
+                quantity: quantity,
+                size: selectedSize,
+                color: selectedColor
+            };
 
-    // Calculate total quantity of this product already in cart (sum all variants)
-    const existingQuantity = cartItems
-        .filter(item => item.name === modalName)
-        .reduce((sum, item) => sum + item.quantity, 0);
-
-    // Check if adding this quantity would exceed stock
-    if (existingQuantity + quantity > stock) {
-        alert(`You cannot add more than ${stock} items of this product`);
-        return;
-    }
-
-    // Check if this exact variant (name+size+color) already exists in cart
-    const existingItem = cartItems.find(item =>
-        item.name === modalName &&
-        item.size === selectedSize &&
-        item.color === selectedColor
-    );
-
-    if (existingItem) {
-        // Update existing variant
-        existingItem.quantity += quantity;
-    } else {
-        // Add new variant
-        cartItems.push({
-            name: modalName,
-            price: modalPrice,
-            size: selectedSize,
-            color: selectedColor,
-            image: modalImage,
-            quantity: quantity
-        });
-    }
-
-    // Save updated cart data to localStorage
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-
-    // Update cart display
-    updateCartDisplay();
-    closeModal(); // Close modal
-}
-
-        // 更新购物车显示
-        function updateCartDisplay() {
-            // 从 localStorage 中加载购物车数据
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
-            document.getElementById("cartCount").textContent = cartItems.length;
+            // Send to server
+            fetch('add_to_cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cartItem)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Item added to cart successfully');
+                        updateCartDisplay();
+                        location.reload(); // 添加这行代码来刷新页面
+                        closeModal();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add item to cart');
+                });
         }
+
+        // 更新购物车显示 - 完全基于数据库
+function updateCartDisplay() {
+    fetch('get_cart.php')
+        .then(response => response.json())
+        .then(cartItemsFromDB => {
+            // 更新全局cartItems变量
+            window.cartItems = cartItemsFromDB;
+            
+            const cartList = document.getElementById("cartItems");
+            cartList.innerHTML = "";
+            let total = 0;
+
+            cartItemsFromDB.forEach((item) => {
+                const li = document.createElement("li");
+                li.className = "cart-item";
+                li.innerHTML = `
+                    <img src="${item.main_image}" alt="${item.name}">
+                    <span>${item.name} - $${item.price * item.quantity}<br> 
+                    Size: ${item.size} <br> Color: ${item.color}</span>
+                    <div style="display: flex; align-items: center;">
+                        <button onclick="changeCartQuantity(${item.cart_id}, -1)">-</button>
+                        <span style="margin: 0 10px;">${item.quantity}</span>
+                        <button onclick="changeCartQuantity(${item.cart_id}, 1)">+</button>
+                    </div>
+                    <button onclick="removeFromCart(${item.cart_id})">×</button>
+                `;
+                cartList.appendChild(li);
+                total += item.price * item.quantity;
+            });
+
+            document.getElementById("cartTotal").textContent = total.toFixed(2);
+            document.getElementById("proceedToPayment").disabled = cartItemsFromDB.length === 0;
+            document.getElementById("cartCount").textContent = cartItemsFromDB.length;
+        })
+        .catch(error => {
+            console.error('Error updating cart display:', error);
+        });
+}
 
         // 重定向到购物车页面
         function showCart() {
-            window.location.href = 'cart.html';
+            window.location.href = 'cart.php';
         }
 
 
@@ -973,4 +1015,4 @@ foreach ($products as $product) {
 
 </body>
 
-</html> 
+</html>
