@@ -1,6 +1,6 @@
 <?php
 
-$conn = mysqli_connect("localhost", "root", "", "product");
+$conn = mysqli_connect("localhost", "root", "", "online_shopping");
 
 
 ?>
