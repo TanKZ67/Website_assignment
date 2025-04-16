@@ -46,7 +46,7 @@ if (isset($_POST['add_product'])) {
    $categoryLower = strtolower(trim($category));
 
    if (empty($categoryLower) || !in_array($categoryLower, $validCategories)) {
-      $errors['category'] = 'Product category is required!';
+      $errors['category'] = 'Product category is required!(Must be Men , Women , kids 2-8y , kids 9-14y)';
    }
 
 
@@ -257,6 +257,7 @@ if (isset($_POST['add_product'])) {
          <option value="21-30">21 - 30</option>
          <option value="31-50">31 - 50</option>
          <option value="51-100">51 - 100</option>
+         <option value="above 100">Above 100</option>
       </select>
 
       <select id="categoryFilter" class="box">
@@ -325,7 +326,7 @@ if (isset($_POST['add_product'])) {
             })
             .catch(error => console.error("Error fetching data:", error));
       }
-
+web/ZheYongPart/admin.php
       // Attach event listeners
       document.getElementById("search").addEventListener("keyup", searchAndFilterProducts);
       document.getElementById("categoryFilter").addEventListener("change", searchAndFilterProducts);
