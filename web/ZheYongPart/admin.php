@@ -326,7 +326,7 @@ if (isset($_POST['add_product'])) {
             })
             .catch(error => console.error("Error fetching data:", error));
       }
-web/ZheYongPart/admin.php
+
       // Attach event listeners
       document.getElementById("search").addEventListener("keyup", searchAndFilterProducts);
       document.getElementById("categoryFilter").addEventListener("change", searchAndFilterProducts);
