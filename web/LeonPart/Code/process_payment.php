@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root"; // 替换为您的数据库用户名
 $password = ""; // 替换为您的数据库密码
-$dbname = "clothes_shop"; // 确保数据库名称正确
+$dbname = "online_shopping"; // 确保数据库名称正确
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
