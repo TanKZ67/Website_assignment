@@ -257,7 +257,7 @@ if (isset($_POST['add_product'])) {
          <option value="21-30">21 - 30</option>
          <option value="31-50">31 - 50</option>
          <option value="51-100">51 - 100</option>
-         <option value="above 100">Above 100</option>
+         <option value="100-1000">100 - 1000</option>
       </select>
 
       <select id="categoryFilter" class="box">

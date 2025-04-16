@@ -17,6 +17,7 @@ try {
     $conn->commit();
     echo json_encode(['success' => true]);
 } catch (PDOException $e) {
+    
     $conn->rollBack();
     echo json_encode(['error' => $e->getMessage()]);
 }

@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';  // 数据库主机
-$dbname = 'product';  // 数据库名
+$dbname = 'online_shopping';  // 数据库名
 $username = 'root';  // 数据库用户名
 $password = '';  // 数据库密码
 
