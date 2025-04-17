@@ -81,6 +81,22 @@ $item['product_id']
 // 3. 清空购物车
 $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
+
+$historyStmt = $conn->prepare("INSERT INTO order_history 
+(user_id, order_id, product_name, quantity, price, payment_method, total_amount) 
+VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+foreach ($orderItems as $item) {
+$historyStmt->execute([
+    $_SESSION['user_id'],
+    $orderId,
+    $item['name'],
+    $item['quantity'],
+    $item['price'],
+    $_POST['payment_method'],
+    $_POST['total_amount']
+]);
+}
     
     $conn->commit();
     echo json_encode(['success' => true, 'order_id' => $orderId]);
