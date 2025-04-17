@@ -587,7 +587,7 @@ require_once 'db_connection.php';
             <a href="">Login</a>|
             <a href="">Sign Up</a>|
             <a href="http://localhost/W1Demo/content.php">Admin</a>|
-            <a href="order_history.html">Order History</a>
+            <a href="order_history.php">Order History</a>
         </nav>
 
         <div class="cart" onclick="showCart()">🛒 <span id="cartCount">0</span></div>
