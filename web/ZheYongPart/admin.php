@@ -46,7 +46,7 @@ if (isset($_POST['add_product'])) {
    $categoryLower = strtolower(trim($category));
 
    if (empty($categoryLower) || !in_array($categoryLower, $validCategories)) {
-      $errors['category'] = 'Product category is required!';
+      $errors['category'] = 'Product category is required!(Must be Men , Women , kids 2-8y , kids 9-14y)';
    }
 
 
@@ -91,7 +91,7 @@ if (isset($_POST['add_product'])) {
 
          if (!empty($color_name) && !empty($color_image)) {
             // Define color image path
-            $color_image_path =  '/' .$upload_folder . basename($color_image);
+            $color_image_path =  '/' . $upload_folder . basename($color_image);
 
             // Move color image to the upload folder
             if (move_uploaded_file($color_image_tmp_name, $upload_folder . $color_image)) {
@@ -165,6 +165,12 @@ if (isset($_POST['add_product'])) {
 
 
    ?>
+
+ 
+   <a href="Aftersignin.php"  style="display: block; width: 10%; cursor: pointer; border-radius: .5rem; margin-top: 1rem; font-size: 1.7rem; padding: 1rem 3rem; background: var(--green);
+   color: var(--white); text-align:center;">Back</a>
+
+
 
    <div class="container">
       <div class="admin-product-form-container">
@@ -257,6 +263,7 @@ if (isset($_POST['add_product'])) {
          <option value="21-30">21 - 30</option>
          <option value="31-50">31 - 50</option>
          <option value="51-100">51 - 100</option>
+         <option value="100-1000">100 - 1000</option>
       </select>
 
       <select id="categoryFilter" class="box">
