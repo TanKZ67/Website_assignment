@@ -2,7 +2,7 @@
 session_start();
 
 // For testing only - remove this in production
-$_SESSION['user_id'] = 28;
+
 
 require_once 'db_connection.php';
 ?>
