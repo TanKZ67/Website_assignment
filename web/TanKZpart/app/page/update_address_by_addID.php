@@ -14,20 +14,23 @@ $conn = new mysqli("localhost", "root", "", "online_shopping");
 
 if ($_POST["address_name"] == "") {
     echo "<script>document.getElementById('address_name').style.display = 'block';</script>";
-    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;"); // 重定向到地址页面
-    
+    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;");
     exit;
 }elseif ($_POST["floor_unit"] == "") {
     echo "<script>document.getElementById('floor_unit').style.display = 'block';</script>";
+    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;");
     exit;
 }elseif ($_POST["state"] == "") {
     echo "<script>document.getElementById('state').style.display = 'block';</script>";
+    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;");
     exit;
 }elseif ($_POST["district"] == "") {
     echo "<script>document.getElementById('district').style.display = 'block';</script>";
+    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;");
     exit;
 }elseif ($_POST["postcode"] == "") {
     echo "<script>document.getElementById('postcode').style.display = 'block';</script>";
+    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;");
     exit;
 }else{
 $stmt = $conn->prepare("UPDATE user_address set address_name=?,floor_unit=?,state=?,district=?,postcode=? WHERE address_id=?");
