@@ -125,7 +125,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Login</h2>
         <form method="POST">
             <input type="email" name="email" required placeholder="Email"><br>
-
             <div class="input-container">
                 <input type="password" name="password" id="password" required placeholder="Password">
                 <span id="eye-icon" class="eye-icon" onclick="togglePassword()">👁️</span>
