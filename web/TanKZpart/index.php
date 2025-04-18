@@ -62,16 +62,18 @@ include 'app/lib/query.php';
 
         <div class="moveDown">
             <form method="post" action="app/page/updateUser.php" target="hiddenframe">
-                <label for="user_Account_label" class="userAccountLabel">User Account</label>
-                <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO"; ?>">
-
                 <?php
+                echo '<label for="user_Account_label" class="userAccountLabel">User Account</label>';
+
                 if ($row["user_account_check"] == 0) {
+                    echo '<input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="' . ($row["user_account"] ?? 'NO') . '">';
                     echo '<p class="userAccountNotices">You can change your User Account once.</p>';
                 } else {
-                    echo '<p class="userAccountNotices">User Account can only be changed once. You have already changed it.</p>';
+                    echo '<input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="' . ($row["user_account"] ?? 'NO') . '" readonly>';
+                    echo '<p class="userAccountNotices">You have already changed it and you can\'t change it agian.</p>';
                 }
                 ?>
+
 
 
                 <div class="moveDown">
