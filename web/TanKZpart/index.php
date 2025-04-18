@@ -66,10 +66,10 @@ include 'app/lib/query.php';
                 <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO"; ?>">
 
                 <?php
-                if ($row["user_account_check"] == 1) {
-                    echo '<p class="userAccountNotices">User Account can only be changed once. You have already changed it.</p>';
+                if ($row["user_account_check"] == 0) {
+                    echo '<p class="userAccountNotices">You can change your User Account once.</p>';
                 } else {
-                    echo '<p class="userAccountNotices">You can change your User Account now.</p>';
+                    echo '<p class="userAccountNotices">User Account can only be changed once. You have already changed it.</p>';
                 }
                 ?>
 
