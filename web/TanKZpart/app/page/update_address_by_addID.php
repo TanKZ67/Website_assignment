@@ -14,19 +14,14 @@ $conn = new mysqli("localhost", "root", "", "online_shopping");
 
 if ($_POST["address_name"] == "") {
     echo "address_name is empty";
-    header("Location: ../../../TanKZpart/program/address.php");
 }elseif ($_POST["floor_unit"] == "") {
     echo "floor_unit is empty";
-    header("Location: ../../../TanKZpart/program/address.php");
 }elseif ($_POST["state"] == "") {
     echo "state is empty";
-    header("Location: ../../../TanKZpart/program/address.php");
 }elseif ($_POST["district"] == "") {
     echo "district is empty";
-    header("Location: ../../../TanKZpart/program/address.php");
 }elseif ($_POST["postcode"] == "") {
     echo "postcode is empty";
-    header("Location: ../../../TanKZpart/program/address.php");
 }else{
 $stmt = $conn->prepare("UPDATE user_address set address_name=?,floor_unit=?,state=?,district=?,postcode=? WHERE address_id=?");
 echo $address_id,$address_name ,$floor_unit,$state,$postcode,$district;
