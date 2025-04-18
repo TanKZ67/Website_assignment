@@ -63,7 +63,17 @@ include 'app/lib/query.php';
             <form method="post" action="app/page/updateUser.php" target="hiddenframe">
                 <label for="user_Account_label" class="userAccountLabel">User Account</label>
                 <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO" ?>">
-
+                <?php               
+                if $row["user_account_check"] == 1) {
+                   echo  '<p class="userAccountNotices">User Account can only be changed once.</p>'
+                  
+}}else?>
+echo '<input type="button" value="change" id="userAccountSubmit" class="userAccountSubmit" disabled>';
+    
+?>
+                    <p class="userAccountNotices">User Account can only be changed once.</p>
+                   <?php 
+                   
                 <p class="userAccountNotices">User Account can only be changed once.</p>
                 
 
