@@ -5,16 +5,16 @@ if ($conn->connect_error) {
     die("连接失败：" . $conn->connect_error);
 }
 
-if (isset($_GET['error']) && $_GET['error'] === 'address_name') {
-    echo "<script>document.getElementById('address_name').style.display = 'block';</script>";
-}elseif (isset($_GET['error']) && $_GET['error'] === 'floor_unit') {
-    echo "<script>document.getElementById('floor_unit').style.display = 'block';</script>";
-}elseif (isset($_GET['error']) && $_GET['error'] === 'state') {
-    echo "<script>document.getElementById('state').style.display = 'block';</script>";
-}elseif (isset($_GET['error']) && $_GET['error'] === 'district') {
-    echo "<script>document.getElementById('district').style.display = 'block';</script>";
-}elseif (isset($_GET['error']) && $_GET['error'] === 'postcode') {
-    echo "<script>document.getElementById('postcode').style.display = 'block';</script>";
+if (isset($_GET['error']) && $_GET['error'] === 'name_address') {
+    echo "<script>document.getElementById('name_address').style.display = 'block';</script>";
+}elseif (isset($_GET['error']) && $_GET['error'] === 'floor_unit2') {
+    echo "<script>document.getElementById('floor_unit2').style.display = 'block';</script>";
+}elseif (isset($_GET['error']) && $_GET['error'] === 'state2') {
+    echo "<script>document.getElementById('state2').style.display = 'block';</script>";
+}elseif (isset($_GET['error']) && $_GET['error'] === 'district2') {
+    echo "<script>document.getElementById('district2').style.display = 'block';</script>";
+}elseif (isset($_GET['error']) && $_GET['error'] === 'postcode2') {
+    echo "<script>document.getElementById('postcode2').style.display = 'block';</script>";
 }
 // 确保 $_GET['edit'] 存在，并且是一个数字
 if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
@@ -153,16 +153,16 @@ include 'addressfetch.php';
                                 <p class="name_address" id="name_address">address name is empty</p>
                             </div>
                             <div >
-                                <p class="floor_unit" id="floor_unit">floor_unit is empty</p>
+                                <p class="floor_unit" id="floor_unit2">floor_unit is empty</p>
                             </div>
                             <div >
-                                <p class="state" id="state">state is empty</p>
+                                <p class="state" id="state2">state is empty</p>
                             </div>
                             <div >
-                                <p class="district" id="district">district is empty</p>
+                                <p class="district" id="district2">district is empty</p>
                             </div>
                             <div >
-                                <p class="postcode" id="postcode">postcode is empty</p>
+                                <p class="postcode" id="postcode2">postcode is empty</p>
                             </div>
                         </div>
 
