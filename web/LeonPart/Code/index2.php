@@ -584,8 +584,7 @@ require_once 'db_connection.php';
 
         <nav class="login">
             <a class="category-toggle" onclick="toggleSidebar()">☰ Categories</a>|
-            <a href="">Login</a>|
-            <a href="">Sign Up</a>|
+            <a href="../../TanKZpart/index.php">My Profile</a>|
             <a href="http://localhost/W1Demo/content.php">Admin</a>|
             <a href="order_history.php">Order History</a>
         </nav>
