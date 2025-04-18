@@ -68,14 +68,9 @@ include 'app/lib/query.php';
                 if ($row["user_account_check"] == 1) {
                     echo  '<p class="userAccountNotices">User Account can only be changed once.</p>';
                 } else {
-                    echo '<input type="button" value="change" id="userAccountSubmit" class="userAccountSubmit" disabled>';
+                    echo '<p class="userAccountNotices">Your User Account had been change.</p>';
                 }
                 ?>
-                <p class="userAccountNotices">User Account can only be changed once.</p>
-
-
-                <p class="userAccountNotices">User Account can only be changed once.</p>
-
 
                 <div class="moveDown">
 
