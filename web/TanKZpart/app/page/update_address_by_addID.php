@@ -14,6 +14,8 @@ $conn = new mysqli("localhost", "root", "", "online_shopping");
 
 if ($_POST["address_name"] == "") {
     echo "<script>document.getElementById('address_name').style.display = 'block';</script>";
+    header("Location: ../lib/addressfetchbyaddressid.php?edit=$address_id;"); // 重定向到地址页面
+    
     exit;
 }elseif ($_POST["floor_unit"] == "") {
     echo "<script>document.getElementById('floor_unit').style.display = 'block';</script>";
