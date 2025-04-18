@@ -61,35 +61,36 @@ include 'app/lib/query.php';
 
         <div class="moveDown">
             <form method="post" action="app/page/updateUser.php" target="hiddenframe">
-                 <label for="user_Account_label" class="userAccountLabel">User Account</label>
-                  <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO" ?>">
+                <label for="user_Account_label" class="userAccountLabel">User Account</label>
+                <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO" ?>">
 
-                    <p class="userAccountNotices">User Account can only be changed once.</p>
+                <p class="userAccountNotices">User Account can only be changed once.</p>
                 
 
-
+                <div class="moveDown">
 
                     <label for="user_Name_Label" class="userNameLabel">Name</label>
                     <input type="text" id="user_Name_Label" class="userNameTextLabel" name="username" value="<?php echo $row["username"] ?? "NO"  ?>">
 
-                
+                </div>
 
-                
+                <div class="moveDown">
 
                     <label class="EmailLabel">E-mail</label>
                     <div class="EmailTextLabel"><?php echo $row["email"] ?? ""  ?></div>
                     <input type="button" value="change" id="emailSubmit" class="emailSubmit">
 
-     
+                </div>
 
-
+                <div class="moveDown">
 
                     <label class="PhoneNumberLabel">Phone Number</label>
                     <div class="PhoneNumberTextLabel"> <?php echo $row["phone_number"] ?? ""  ?> </div>
                     <input type="button" value="change" id="PhoneNumberSubmit" class="PhoneNumberSubmit">
+                </div>
 
 
-
+                <div class="moveDown">
 
 
                     <label class="GenderLabel"> Gender </label>
@@ -101,15 +102,16 @@ include 'app/lib/query.php';
                         <?php echo ($row["gender"] ?? "") === "F" ? "checked" : ""; ?>>
                     <label for="genderF">Female</label>
 
+                </div>
 
-
+                <div class="moveDown">
 
                     <label for="Date_Of_Birth_Label" class="DateOfBirth">Date of birth</label>
                     <input type="date" id="Date_Of_Birth_Label" class="DateOfBirthLabel" name="date_of_birth" value="<?php echo $row["date_of_birth"] ?? "" ?>">
+                </div>
 
-
-                  <div class="moveDown"></div>
-                  <input type="submit" value="save" class="save_button" id="savebutton">
+                <div class="moveDown"></div>
+                <input type="submit" value="save" class="save_button" id="savebutton">
 
             </form>
 
