@@ -67,7 +67,7 @@ include 'app/lib/query.php';
                 <?php
                 if ($row["user_account_check"] == 1) {
                     echo  '<p class="userAccountNotices">User Account can only be changed once.</p>';
-                } else {
+                } else if($row["user_account_check"] == 0) {
                     echo '<p class="userAccountNotices">Your User Account had been change.</p>';
                 }
                 ?>
