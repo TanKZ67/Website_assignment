@@ -124,11 +124,11 @@ include 'addressfetch.php';
                 <div class="layerA3">
                     <form action="../page/update_address_by_addID.php" method="post">
                         <input type="hidden" name="address_id" value="<?= $addressrows['address_id'] ?? ''; ?>">
-                        <input type="text" placeholder="Name" name="address_name" class="inputaddname" value="<?= $addressrows['address_name'] ?? ''; ?>" require>
-                        <input type="text" placeholder="Postcode" name="postcode" class="inputaddpost" value="<?= $addressrows['postcode'] ?? ''; ?>" require>
-                        <input type="text" placeholder="House Number,Building,Street Name" name="floor_unit" class="inputaddfloor" value="<?= $addressrows['floor_unit'] ?? ''; ?>" require>
-                        <input type="text" placeholder="State" name="state" class="inputaddstate" value="<?= $addressrows['state'] ?? ''; ?>" require>
-                        <input type="text" placeholder="District" name="district" class="inputaddsid" value="<?= $addressrows['district'] ?? ''; ?>" require>
+                        <input type="text" placeholder="Name" name="address_name" class="inputaddname" value="<?= $addressrows['address_name'] ?? ''; ?>" >
+                        <input type="text" placeholder="Postcode" name="postcode" class="inputaddpost" value="<?= $addressrows['postcode'] ?? ''; ?>" >
+                        <input type="text" placeholder="House Number,Building,Street Name" name="floor_unit" class="inputaddfloor" value="<?= $addressrows['floor_unit'] ?? ''; ?>" >
+                        <input type="text" placeholder="State" name="state" class="inputaddstate" value="<?= $addressrows['state'] ?? ''; ?>" >
+                        <input type="text" placeholder="District" name="district" class="inputaddsid" value="<?= $addressrows['district'] ?? ''; ?>" >
                         <input type="submit" id="savebuttonbyADDid" class="buttonsavenewadd" value="save">
                         <button type="button" class="cancelbutton" onclick="window.location.href='/a/Website_assignment/web/TanKZpart/program/address.php'">cancel</button>
                       
