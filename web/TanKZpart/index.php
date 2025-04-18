@@ -7,6 +7,7 @@ include 'app/lib/query.php';
 <!DOCTYPE html>
 <html lang="en">
 <div class="UpBlock"></div>
+
 <head>
     <link rel="stylesheet" href="app/css/app.css">
     <script src="app/js/index.js" defer></script>
@@ -45,11 +46,11 @@ include 'app/lib/query.php';
 
         <hr>
         <span class="vertical-line"></span>
-        <?php 
-        
-        
-        
-        
+        <?php
+
+
+
+
         ?>
         <form method="post" action="app/page/image.php" enctype="multipart/form-data" id="uploadimg" target="hiddenframe">
             <div class="imageUpdateBoss" id="imageUpdate">
@@ -63,19 +64,18 @@ include 'app/lib/query.php';
             <form method="post" action="app/page/updateUser.php" target="hiddenframe">
                 <label for="user_Account_label" class="userAccountLabel">User Account</label>
                 <input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="<?php echo $row["user_account"] ?? "NO" ?>">
-                <?php               
-                if $row["user_account_check"] == 1) {
-                   echo  '<p class="userAccountNotices">User Account can only be changed once.</p>'
-                  
-}}else?>
-echo '<input type="button" value="change" id="userAccountSubmit" class="userAccountSubmit" disabled>';
-    
-?>
-                    <p class="userAccountNotices">User Account can only be changed once.</p>
-                   <?php 
-                   
+                <?php
+                if ($row["user_account_check"] == 1) {
+                    echo  '<p class="userAccountNotices">User Account can only be changed once.</p>';
+                } else {
+                    echo '<input type="button" value="change" id="userAccountSubmit" class="userAccountSubmit" disabled>';
+                }
+                ?>
                 <p class="userAccountNotices">User Account can only be changed once.</p>
-                
+
+
+                <p class="userAccountNotices">User Account can only be changed once.</p>
+
 
                 <div class="moveDown">
 
@@ -128,37 +128,37 @@ echo '<input type="button" value="change" id="userAccountSubmit" class="userAcco
         </div>
     </div>
     <div id="layerEM1" class="layerEM11">
-                <div id="layerEM2" class="layerEM22">
-                    <div class="layertext">Change Email Address</div>
-                    <hr>
-                    <form action="app/page/saveEmail.php" method="post" target="hiddenframe">
-                        <label>New email address</label>
-                        <input type="text" value="<?php echo $row["email"] ?? "" ?>" name="email" id="emailInput" required>
-                        <button type="submit" id="comfirmYesEmail" class="buttonA">Next</button>
-                        <button type="button" id="comfirmNoEmail" class="buttonB">Cancel</button>
-                    </form>
-                    <div class="emailOTP" id="emailOTP">
-                        <label for="emailOTP" class="emailOTPLabel">OTP</label>
-                        <input type="text" class="emailOTPtext" id="OTP">
-                        <button type="button" class="OTPverify" id="OTPbutton">verify</button>
-                    </div>
-                    
-                </div>
+        <div id="layerEM2" class="layerEM22">
+            <div class="layertext">Change Email Address</div>
+            <hr>
+            <form action="app/page/saveEmail.php" method="post" target="hiddenframe">
+                <label>New email address</label>
+                <input type="text" value="<?php echo $row["email"] ?? "" ?>" name="email" id="emailInput" required>
+                <button type="submit" id="comfirmYesEmail" class="buttonA">Next</button>
+                <button type="button" id="comfirmNoEmail" class="buttonB">Cancel</button>
+            </form>
+            <div class="emailOTP" id="emailOTP">
+                <label for="emailOTP" class="emailOTPLabel">OTP</label>
+                <input type="text" class="emailOTPtext" id="OTP">
+                <button type="button" class="OTPverify" id="OTPbutton">verify</button>
             </div>
 
+        </div>
+    </div>
 
 
-            <div id="layerPN1" class="layerPN11">
-                <div id="layerPN2" class="layerPN22">
-                    <div class="layertext">Edit Phone Number</div>
-                    <hr>
-                    <form action="app/page/phone_number.php" method="post" target="hiddenframe">
-                        <label>New Phone Number</label>
-                        <input type="text" value="<?php echo $row["phone_number"] ?? "" ?>" name="phone_number" id="phonenumberInput" required>
-                        <button type="submit" id="comfirmYesPN" class="buttonA">Next</button>
-                        <button type="button" id="comfirmNoPN" class="buttonB">Cancel</button>
-                    </form>
-                </div>
-            </div>
+
+    <div id="layerPN1" class="layerPN11">
+        <div id="layerPN2" class="layerPN22">
+            <div class="layertext">Edit Phone Number</div>
+            <hr>
+            <form action="app/page/phone_number.php" method="post" target="hiddenframe">
+                <label>New Phone Number</label>
+                <input type="text" value="<?php echo $row["phone_number"] ?? "" ?>" name="phone_number" id="phonenumberInput" required>
+                <button type="submit" id="comfirmYesPN" class="buttonA">Next</button>
+                <button type="button" id="comfirmNoPN" class="buttonB">Cancel</button>
+            </form>
+        </div>
+    </div>
 
 </body>

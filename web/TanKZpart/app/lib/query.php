@@ -9,13 +9,14 @@ if ($conn->connect_error) {
 }
 
 // 查询多个字段
-$stmt = $conn->prepare("SELECT user_account, username, email, phone_number, gender, date_of_birth,picture FROM user_profile WHERE user_id = ?");
+$stmt = $conn->prepare("SELECT user_account,user_account_check, username, email, phone_number, gender, date_of_birth,picture FROM user_profile WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $row = $result->fetch_assoc() ?: [
     "user_account" => "NO",
+    "user_account_check" =>"NO",
     "username" => "NO",
     "email" => "NO",
     "phone_number" => "NO",
