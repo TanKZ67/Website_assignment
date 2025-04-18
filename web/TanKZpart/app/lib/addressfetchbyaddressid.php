@@ -137,7 +137,23 @@ include 'addressfetch.php';
             </div>
         </div>
 
-
+                        <div id="error" class="error">
+                            <div >
+                                <p class="name_address" id="name_address">address name is empty</p>
+                            </div>
+                            <div >
+                                <p class="floor_unit" id="floor_unit">floor_unit is empty</p>
+                            </div>
+                            <div >
+                                <p class="state" id="state">state is empty</p>
+                            </div>
+                            <div >
+                                <p class="district" id="district">district is empty</p>
+                            </div>
+                            <div >
+                                <p class="postcode" id="postcode">postcode is empty</p>
+                            </div>
+                        </div>
 
         
 </body>

@@ -13,15 +13,20 @@ $conn = new mysqli("localhost", "root", "", "online_shopping");
 
 
 if ($_POST["address_name"] == "") {
-    echo "address_name is empty";
+    echo "<script>document.getElementById('address_name').style.display = 'block';</script>";
+    exit;
 }elseif ($_POST["floor_unit"] == "") {
-    echo "floor_unit is empty";
+    echo "<script>document.getElementById('floor_unit').style.display = 'block';</script>";
+    exit;
 }elseif ($_POST["state"] == "") {
-    echo "state is empty";
+    echo "<script>document.getElementById('state').style.display = 'block';</script>";
+    exit;
 }elseif ($_POST["district"] == "") {
-    echo "district is empty";
+    echo "<script>document.getElementById('district').style.display = 'block';</script>";
+    exit;
 }elseif ($_POST["postcode"] == "") {
-    echo "postcode is empty";
+    echo "<script>document.getElementById('postcode').style.display = 'block';</script>";
+    exit;
 }else{
 $stmt = $conn->prepare("UPDATE user_address set address_name=?,floor_unit=?,state=?,district=?,postcode=? WHERE address_id=?");
 echo $address_id,$address_name ,$floor_unit,$state,$postcode,$district;
