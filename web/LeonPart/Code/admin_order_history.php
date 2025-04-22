@@ -3,10 +3,12 @@ session_start();
 require_once 'db_connection.php';
 
 // 检查用户是否登录并是管理员（这里假设 user_id = 1 是 admin）
-if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != 1) {
+
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     echo "Access denied. Admins only.";
     exit();
 }
+
 
 // 查询所有用户的订单历史，加入 JOIN 显示用户名（如果有 user 表）
 $stmt = $conn->prepare("
