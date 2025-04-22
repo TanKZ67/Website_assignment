@@ -25,7 +25,7 @@
                 <h1>Order History</h1>
                 <div class="SPACE02">
                 <a href="#" onclick="location.href='/a/Website_assignment/web/LeonPart/code/admin_order_history.php'">
-                        <img src="history_icon.png" class="Clickanimation" alt="Order History Icon">
+                        <img src="Order.history.png" class="Clickanimation" alt="Order History Icon">
                     </a>
                 </div>
             </div>
