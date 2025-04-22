@@ -166,8 +166,7 @@ if (isset($_POST['add_product'])) {
 
    ?>
 
- //<a href="#" onclick="location.href='/a/Website_assignment/web/Devonpart/web/members.php'"></a>
-   <a href="#" onclick="location.href='/a/Website_assignment/web/Devonpart/web/members.php'"  style="display: block; width: 10%; cursor: pointer; border-radius: .5rem; margin-top: 1rem; font-size: 1.7rem; padding: 1rem 3rem; background: var(--green);
+   <a href="#" onclick="location.href='\a\Website_assignment\web\YuchenPart\Aftersignin.php'"  style="display: block; width: 10%; cursor: pointer; border-radius: .5rem; margin-top: 1rem; font-size: 1.7rem; padding: 1rem 3rem; background: var(--green);
    color: var(--white); text-align:center;">Back</a>
 
 
