@@ -30,5 +30,11 @@
     </div>
     <a href="logout.php" style="color: red;">Logout</a>
 
+    <div class="button-container">
+            <a href="order_history.php" class="order-history-button">Order History</a>
+            <a href="logout.php" class="logout-button">Logout</a>
+        </div>
+    </div>
+
 </body>
 </html>
