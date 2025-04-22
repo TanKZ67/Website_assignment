@@ -586,7 +586,7 @@ require_once 'db_connection.php';
             <a class="category-toggle" onclick="toggleSidebar()">☰ Categories</a>|
             <a href="../../Devonpart/web/login.php">Login</a>|
             <a href="../../Devonpart/web/register.php">Sign Up</a>|
-            <a href="http://localhost/Website_assignment/web/YuchenPart/login.php">Admin</a>
+            <a href="http://localhost/Website_assignment/web/YuchenPart/Content.php">Admin</a>
             <a href="order_history.php">Order History</a>
         </nav>
 
