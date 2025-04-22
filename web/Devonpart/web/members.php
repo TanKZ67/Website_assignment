@@ -15,6 +15,58 @@ $result = $stmt->get_result();
 <html lang="en">
 <head>
     <title>Members List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            padding: 40px;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            width: 60%;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 <body>
     <h2>Registered Members</h2>
@@ -24,7 +76,7 @@ $result = $stmt->get_result();
         <button type="submit">Search</button>
     </form>
 
-    <table border="1">
+    <table>
         <tr>
             <th>Username</th>
             <th>Email</th>
