@@ -37,7 +37,7 @@ $result = $stmt->get_result();
         }
         button {
             padding: 8px 16px;
-            background-color: #4CAF50;
+            background-color:rgb(59, 170, 185);
             color: white;
             border: none;
             border-radius: 4px;
@@ -45,7 +45,7 @@ $result = $stmt->get_result();
             margin-left: 10px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color:rgb(83, 69, 160);
         }
         table {
             margin: auto;
