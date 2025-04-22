@@ -15,14 +15,14 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $row = $result->fetch_assoc() ?: [
-    "user_account" => "NO",
-    "user_account_check" =>"NO",
-    "username" => "NO",
-    "email" => "NO",
-    "phone_number" => "NO",
-    "gender" => "NO",
-    "date_of_birth" => "NO",
-    "picture" => "default.png" 
+    "user_account" => "",
+    "user_account_check" =>"",
+    "username" => "",
+    "email" => "",
+    "phone_number" => "",
+    "gender" => "",
+    "date_of_birth" => "",
+    "picture" => "../image/default-avatar-icon-of-social-media-user-vector.jpg" 
 ]; // 如果查不到数据，就给默认值
 
 $stmt->close();
