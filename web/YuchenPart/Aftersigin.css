@@ -10,57 +10,58 @@ body {
     align-items: center;
 }
 
-/* 主容器 - 左右布局 */
+/* 主容器 */
 .container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 80%;
     max-width: 1200px;
-    height: 100%;
+    height: auto;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
-    position: relative;
 }
 
-/* 上部区域 - 左右布局 */
-.content-sections {
+/* 顶部两格布局 */
+.top-row {
     display: flex;
     justify-content: space-between;
-    flex: 1;
+    width: 100%;
+    margin-bottom: 30px;
 }
 
-/* 左侧区域 */
-.left-section {
-    width: 45%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* 单个功能区样式 */
+.box-section {
+    width: 48%;
     text-align: center;
     background-color: #e8f5e9;
-    border-radius: 10px;
     padding: 20px;
+    border-radius: 10px;
 }
 
-/* 右侧区域 */
-.right-section {
-    width: 45%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* 第二个 Order History 的背景不同 */
+.box-section:nth-child(2) {
     background-color: #e1f5fe;
-    border-radius: 10px;
-    padding: 20px;
 }
 
-/* 方框样式 */
-.SPACE01, .SPACE02 {
+/* 下方一行 Product */
+.bottom-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.bottom-row .box-section {
+    width: 48%;
+    background-color: #f3e5f5;
+}
+
+/* 图标方块 */
+.SPACE01, .SPACE02, .SPACE03 {
     width: 200px;
     height: 200px;
     background-color: lightblue;
@@ -70,7 +71,7 @@ body {
     border: 2px solid #000;
     border-radius: 10px;
     overflow: hidden;
-    margin-top: 20px;
+    margin: 20px auto 0 auto;
     transition: transform 0.3s ease;
 }
 
@@ -87,16 +88,15 @@ body {
     filter: brightness(0.9);
 }
 
-/* 按钮容器 - 固定底部中间 */
+/* 按钮容器 */
 .button-container {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin-top: 30px;
-    padding-bottom: 10px;
+    margin-top: 20px;
 }
 
-/* 自定义按钮样式 */
+/* 按钮样式 */
 a.logout-button,
 a.order-history-button {
     display: inline-block;
@@ -128,26 +128,31 @@ a.order-history-button:active {
     transform: scale(0.95);
 }
 
-/* 整体标题样式 */
+/* 标题样式 */
 h1 {
     font-size: 24px;
     color: #333;
     font-weight: 600;
 }
 
-/* 小屏幕响应式 */
+/* 响应式 */
 @media (max-width: 768px) {
-    .content-sections {
+    .top-row {
         flex-direction: column;
         align-items: center;
     }
 
-    .left-section, .right-section {
-        width: 80%;
-        margin: 20px 0;
+    .box-section {
+        width: 90% !important;
+        margin-bottom: 20px;
     }
 
-    .SPACE01, .SPACE02 {
+    .bottom-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .SPACE01, .SPACE02, .SPACE03 {
         width: 180px;
         height: 180px;
     }
