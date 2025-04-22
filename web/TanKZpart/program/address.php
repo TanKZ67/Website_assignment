@@ -22,8 +22,9 @@ include '../app/lib/addressfetch.php';
     <div>
 
         <div class="LeftSideBodden">
-
-            <img src="../app/image/<?php echo basename($row['picture']); ?>" alt="Current Image" class="UserImage2">
+        
+            <img src="../app/image/<?php echo basename($row['picture'] ?? '../../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
+       
             <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "NO", 0, 10, 'UTF-8') . "...."; ?></P>
             <a href="../index.php" class="editprofile">Edit Profile</a>
             <hr style="margin-top: 40px;" color="white">

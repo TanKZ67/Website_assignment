@@ -180,7 +180,7 @@ margin-top: -10px;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 200;
+    z-index: 9999;
 
 }
 
@@ -208,35 +208,35 @@ margin-top: -10px;
 
 }
 
-.inputaddname{
-    width: 175px;
+.inputaddname {
+    width: 190px;
     height: 30px;
     padding-left: 10px;
 }
 
-.inputaddpost{
-    width: 175px;
+.inputaddpost {
+    width: 190px;
     height: 30px;
     padding-left: 10px;
-    margin-left: 20px;
+    margin-left: 21px;
 }
 
 .inputaddfloor{
-    width: 390px;
+    width: 405px;
     height: 30px;
     margin-top: 20px;
     padding-left: 10px;
 }
 
 .inputaddstate{
-    width: 390px;
+    width: 405px;
     height: 30px;
     margin-top: 20px;
     padding-left: 10px;
 }
 
 .inputaddsid{
-    width: 390px;
+    width: 405px;
     height: 30px;
     margin-top: 20px;
     padding-left: 10px;
