@@ -188,6 +188,11 @@ body {
   border-color: aliceblue;
 }
 
+.emailSubmit2{
+  margin-left: 4px;
+
+}
+
 .emailOTP {
   display: none;
 }
@@ -227,11 +232,7 @@ body {
   border-color: aliceblue;
 }
 
-.PhoneNumberSubmit2{
-  margin-left: 10px;
-  color: blue;
-  border-color: aliceblue;
-}
+
 
 .GenderLabel {
   margin-left: 42px;

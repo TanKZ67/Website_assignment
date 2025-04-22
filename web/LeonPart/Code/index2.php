@@ -385,7 +385,7 @@ require_once 'db_connection.php';
         .search-container {
             position: absolute;
             bottom: 5px;
-            right: 425px;
+            right: 600px;
             display: inline-block;
         }
 
@@ -480,14 +480,13 @@ require_once 'db_connection.php';
         }
 
         a:hover {
-
             color: pink;
         }
 
 
         #promotionimage {
             position: relative;
-            margin-left: 375px;
+            margin-left: 480px;
             width: 50%;
             height: 300px;
             overflow: hidden;
@@ -597,7 +596,7 @@ require_once 'db_connection.php';
             <button class="close-button" onclick="closeCart()">×</button>
         </div>
 
-        <h1 style="color:white;font-size: 30px; position:absolute;right:570px; bottom:25px; "><img style="height: 40px"
+        <h1 style="color:white;font-size: 30px; position:absolute;right:730px; bottom:25px; "><img style="height: 40px"
                 src="\W1Demo\image\giphy.gif" alt="Clothes-Gif">TARUMT Clothes Shop<img style="height: 40px"
                 src="\W1Demo\image\giphy.gif" alt="Clothes-Gif"></h1>
     </div>

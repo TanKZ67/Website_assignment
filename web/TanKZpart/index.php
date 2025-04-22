@@ -24,7 +24,7 @@ include 'app/lib/query.php';
     <div class="LeftSideBodden">
 
         <img src="app/image/<?php echo basename($row['picture']); ?>" alt="Current Image" class="UserImage2">
-        <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "NO", 0, 10, 'UTF-8') . "...."; ?></P>
+        <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "NO", 0, 10, 'UTF-8') . "Unknow"; ?></P>
         <a href="index.php" class="editprofile">Edit Profile</a>
         <hr style="margin-top: 40px;" color="white">
         <a href="index.php" class="closeline">
@@ -87,7 +87,7 @@ include 'app/lib/query.php';
 
                     <label class="EmailLabel">E-mail</label>
                     <div class="EmailTextLabel"><?php echo $row["email"] ?? ""  ?></div>
-                    <?php if ($row["email"]==null) echo' <input type="button" value="add" id="emailSubmit" class="emailSubmit">';
+                    <?php if ($row["email"]==null) echo' <input type="button" value="add" id="emailSubmit" class="emailSubmit2">';
                             else  echo'<input type="button" value="change" id="emailSubmit" class="emailSubmit">';?>
                     
 
@@ -97,8 +97,8 @@ include 'app/lib/query.php';
 
                     <label class="PhoneNumberLabel">Phone Number</label>
                     <div class="PhoneNumberTextLabel"> <?php echo $row["phone_number"] ?? ""  ?> </div>
-                    <?php if ($row["email"]==null) echo' <input type="button" value="add" id="PhoneNumberSubmit" class="PhoneNumberSubmit2">';
-                            else  echo'<input type="button" value="change" id="PhoneNumberSubmit" class="PhoneNumberSubmit">';?>
+                    <?php if ($row["email"]==null) echo' <input type="button" value="add" id="PhoneNumberSubmit">';
+                        else  echo'<input type="button" value="change" id="PhoneNumberSubmit" class="PhoneNumberSubmit">';?>
                    
                 </div>
 
