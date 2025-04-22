@@ -36,9 +36,9 @@
             <div class="box-section">
                 <h1>Product</h1>
                 <div class="SPACE03">
-                    <a href="admin.php">
-                        <img src="Product_sample_icon_picture.png" class="Clickanimation" alt="Product Image">
-                    </a>
+                <a href="#" onclick="location.href='ZheYongPart/admin.php'">
+                     <img src="Product_sample_icon_picture.png" class="Clickanimation" alt="Product Image">
+                </a>
                 </div>
             </div>
         </div>
