@@ -37,7 +37,7 @@
                 <h1>Product</h1>
                 <div class="SPACE03">
                 <a href="#" onclick="location.href='/a/Website_assignment/web/ZheYongPart/admin.php'">
-                     <img src="Product_sample_icon_picture.png" class="Clickanimation" alt="Product Image">
+                    <img src="Product_sample_icon_picture.png" class="Clickanimation" alt="Product Image">
                 </a>
                 </div>
             </div>
