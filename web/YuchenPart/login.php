@@ -6,23 +6,17 @@ $dbname = "online_shopping";
 
 // 创建连接
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// 检查连接
 if ($conn->connect_error) {
     die("数据库连接失败: " . $conn->connect_error);
 }
 
-// 启用 session
 session_start();
-
-// 临时 OTP 存储（示例用途，建议实际使用数据库或 Redis）
 $stored_otp = [];
 
-// 请求处理
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST['action'] ?? '';
 
-    // 登录逻辑
+    // ✅ 管理员登录逻辑
     if ($action === '' || $action === 'login') {
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -42,7 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $hashed_password_from_db = $row['admin_password'];
 
             if (password_verify($password, $hashed_password_from_db)) {
-                $_SESSION['logged_in_user'] = $username;
+                $_SESSION['is_admin'] = true;
+                $_SESSION['admin_name'] = $username;
                 echo "success";
             } else {
                 echo "Incorrect password";
@@ -53,10 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
     }
 
-    // 发送 OTP
+    // ✅ 发送 OTP
     elseif ($action === 'send_otp') {
         $email = $_POST['to_email'] ?? '';
-        $username = $_SESSION['logged_in_user'] ?? '';
+        $username = $_SESSION['admin_name'] ?? '';
 
         if (empty($email) || empty($username)) {
             echo json_encode(["success" => false, "message" => "Email or username missing"]);
@@ -71,13 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // 验证 OTP 并更新密码
+    // ✅ 验证 OTP 并更新密码
     elseif ($action === 'verify_otp_and_update') {
         $email = $_POST['to_email'] ?? '';
         $otp = $_POST['otp'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
-        $username = $_SESSION['logged_in_user'] ?? '';
+        $username = $_SESSION['admin_name'] ?? '';
 
         if (empty($email) || empty($otp) || empty($new_password) || empty($confirm_password) || empty($username)) {
             echo "All fields are required";
@@ -108,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // 重置密码（通过用户名，直接更新密码）
+    // ✅ 重置密码
     elseif ($action === 'reset_password') {
         $username = $_POST['username'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
@@ -139,9 +134,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
     }
 
-    // 检查是否已登录
+    // ✅ 检查管理员登录状态
     elseif ($action === 'check_session') {
-        if (isset($_SESSION['logged_in_user']) && !empty($_SESSION['logged_in_user'])) {
+        if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
             echo "logged_in";
         } else {
             echo "not_logged_in";
