@@ -4,14 +4,14 @@ require_once 'db_connection.php';
 
 // 检查用户是否已登录
 if (!isset($_SESSION['user_id'])) {
-    echo "Please login to view order history.";
+    echo "Please login to view your order history.";
     exit();
 }
 
 $userId = $_SESSION['user_id'];
 
-// 查询当前用户的订单历史
 try {
+    // 普通用户：只获取自己的订单历史
     $stmt = $conn->prepare("
         SELECT order_id, product_name, quantity, price, payment_method, total_amount, paid_at 
         FROM order_history 
