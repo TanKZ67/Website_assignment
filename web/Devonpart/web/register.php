@@ -3,7 +3,7 @@ require 'config/db.php';
 require 'email/send_email.php';
 
 session_start();
-error_reporting(E_ALL);  
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ssss", $username, $email, $hashed_password, $token);
             $stmt->execute();
 
-            echo "<script>alert('A confirmation email has been sent!'); window.location.href='index.php';</script>";
+            echo "<script>alert('A confirmation email has been sent!'); window.location.href='login.php';</script>";
         }
     }
 }
@@ -50,6 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Register</title>
     <style>
@@ -118,8 +119,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        .login {
+                    font-size: 13px;
+                    margin-left: 116px;
+                    position: absolute;
+                    margin-top: -39px;
+                    }
     </style>
 </head>
+
 <body>
     <div class="register-container">
         <h2>Register</h2>
@@ -133,6 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <button type="submit">Register</button>
+            <p><a href="login.php" class="login">Already have account?</a></p>
         </form>
     </div>
 
@@ -149,4 +159,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </script>
 </body>
+
 </html>

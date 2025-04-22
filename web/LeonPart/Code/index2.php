@@ -1,6 +1,5 @@
 <?php
 session_start();
-$_SESSION['user_id'] = 1;
 
 // For testing only - remove this in production
 

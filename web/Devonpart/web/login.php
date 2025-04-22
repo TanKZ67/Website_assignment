@@ -117,7 +117,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button:hover {
             background-color: #0056b3;
         }
+
+        .pass {
+            font-size: small;
+            margin-left: -121px;
+        }
+
+        .acc {
+            font-size: small;
+            margin-top: -47px;
+            position: absolute;
+        }
+
     </style>
+    
 </head>
 
 <body>
@@ -132,7 +145,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <button type="submit">Login</button>
         </form>
-        <p><a href="forgot_password.php">Forgot Password?</a></p>
+        <p><a href="forgot_password.php" class="pass">Forgot Password?</a></p>
+        <p><a href="register.php" class="acc">Don't have account?</a></p>
     </div>
 
     <script>

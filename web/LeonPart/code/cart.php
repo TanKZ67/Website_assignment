@@ -3,7 +3,7 @@ session_start();
 require_once 'db_connection.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../../Devonpart/web/login");
     exit();
 }
 
