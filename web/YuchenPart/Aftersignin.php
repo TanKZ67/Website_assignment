@@ -42,12 +42,14 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 底部 Logout 按钮 -->
+        <!-- 底部 Logout 按钮 -->
     <div class="bottom-center">
         <a href="logout.php" class="logout-button">Logout</a>
     </div>
 
+    </div>
+
+    
 </body>
 </html>
