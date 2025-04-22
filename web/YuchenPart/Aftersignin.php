@@ -15,7 +15,7 @@
             <div class="box-section">
                 <h1>Memberlist</h1>
                 <div class="SPACE01">
-                    <a href="Content.php">
+                <a href="#" onclick="location.href='/a/Website_assignment/web/Devonpart\web\members.php'">
                         <img src="user_icon_007.jpg" class="Clickanimation" alt="User Icon">
                     </a>
                 </div>
@@ -25,7 +25,7 @@
                 <h1>Order History</h1>
                 <div class="SPACE02">
                 <a href="#" onclick="location.href='/a/Website_assignment/web/LeonPart/code/admin_order_history.php'">
-                        <img src="history_icon.png" class="Clickanimation" alt="Order History Icon">
+                        <img src="Order_history.png" class="Clickanimation" alt="Order History Icon">
                     </a>
                 </div>
             </div>
