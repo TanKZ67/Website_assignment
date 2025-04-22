@@ -15,7 +15,7 @@
             <div class="box-section">
                 <h1>Memberlist</h1>
                 <div class="SPACE01">
-                    <a href="Content.php">
+                <a href="#" onclick="location.href='/a/Website_assignment/web/Devonpart\web\members.php'">
                         <img src="user_icon_007.jpg" class="Clickanimation" alt="User Icon">
                     </a>
                 </div>
