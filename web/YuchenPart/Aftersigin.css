@@ -156,13 +156,12 @@ h1 {
         width: 180px;
         height: 180px;
     }
-
-    /* 按钮容器 */
-.button-container {
-    display: flex;
-    justify-content: center; /* 水平居中 */
-    align-items: center;      /* 垂直居中（可选） */
-    margin-top: 20px;
-}
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 40px 0 20px 0; /* 上下留空一点 */
+    }
+    
 
 }
