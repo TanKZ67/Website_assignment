@@ -54,7 +54,7 @@ include 'app/lib/query.php';
         ?>
         <form method="post" action="app/page/image.php" enctype="multipart/form-data" id="uploadimg" target="hiddenframe">
             <div class="imageUpdateBoss" id="imageUpdate">
-                <img src="app/image/<?php echo basename($row['picture']); ?>" alt="Current Image" class="UserImage">
+                <img src="app/image/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage">
                 <input type="file" accept="image/*" class="imgaccept" name="picture" id="imageupload">
             </div>
         </form>
@@ -66,10 +66,10 @@ include 'app/lib/query.php';
                 echo '<label for="user_Account_label" class="userAccountLabel">User Account</label>';
 
                 if ($row["user_account_check"] == 0) {
-                    echo '<input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="' . ($row["user_account"] ?? 'NO') . '">';
+                    echo '<input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="' . ($row["user_account"] ?? '') . '">';
                     echo '<p class="userAccountNotices">You can change your User Account once.</p>';
                 } else {
-                    echo '<input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="' . ($row["user_account"] ?? 'NO') . '" readonly>';
+                    echo '<input type="text" id="user_Account_label" class="userAccountTextLabel" name="user_account" value="' . ($row["user_account"] ?? '') . '" readonly>';
                     echo '<p class="userAccountNotices">You have already changed it and you can\'t change it agian.</p>';
                 }
                 ?>
@@ -79,7 +79,7 @@ include 'app/lib/query.php';
                 <div class="moveDown">
 
                     <label for="user_Name_Label" class="userNameLabel">Name</label>
-                    <input type="text" id="user_Name_Label" class="userNameTextLabel" name="username" value="<?php echo $row["username"] ?? "NO"  ?>">
+                    <input type="text" id="user_Name_Label" class="userNameTextLabel" name="username" value="<?php echo $row["username"] ?? ""  ?>">
 
                 </div>
 
