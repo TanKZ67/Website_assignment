@@ -6,16 +6,55 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST["username"]);
-    $email = trim($_POST["email"]);
-    $password = $_POST["password"];
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("Invalid CSRF token");
+    }
+
+    $user_account = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $gender = $_POST['gender'];
+    $date_of_birth = $_POST['date_of_birth'];
+    $phone_number = $_POST['phone_number'];
+
+    // 密码验证逻辑
     if (!preg_match("/[A-Za-z]/", $password) || !preg_match("/\d/", $password) || strlen($password) < 8) {
-        echo "<script>alert('Password must contain at least one letter, one number, and be at least 8 characters long!');</script>";
+        $_SESSION['password_error'] = "Password must contain at least one letter, one number, and be at least 8 characters.";
     } else {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // ✅ 手机号码格式验证（8~15位数字）
+        if (!preg_match("/^\d{8,15}$/", $phone_number)) {
+            die("Invalid phone number. It should be 8 to 15 digits.");
+        }
 
+        // ✅ 照片验证：确保图片文件已上传
+        if (!isset($_FILES["profile"]) || $_FILES["profile"]["error"] === UPLOAD_ERR_NO_FILE) {
+            $photo_error = "Profile picture is required.";
+        } else {
+            // 图片上传逻辑
+            $imagePath = null;
+            if ($_FILES["profile"]["error"] === UPLOAD_ERR_OK) {
+                $targetDir = "uploads/";
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0777, true); // 自动创建目录
+                }
+                $filename = basename($_FILES["profile"]["name"]);
+                $targetFile = $targetDir . time() . "_" . $filename;
+
+                if (move_uploaded_file($_FILES["profile"]["tmp_name"], $targetFile)) {
+                    $imagePath = $targetFile;
+                }
+            }
+        }
+
+        // 加密密码
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        // 检查邮箱是否已注册
         $stmt = $conn->prepare("SELECT user_id FROM user_profile WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -31,15 +70,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $message = "
                 <h2>Email Confirmation</h2>
                 <p>Click below to confirm your registration:</p>
-                <a href='$confirm_link' style='padding: 10px; background: green; color: white; text-decoration: none;'>Confirm</a>
-                <p>Or click here to cancel:</p>
-                <a href='$cancel_link' style='padding: 10px; background: red; color: white; text-decoration: none;'>Cancel</a>
+                <a href='$confirm_link' style='padding: 10px; background: green; color: white;'>Confirm</a>
+                <p>Or cancel registration:</p>
+                <a href='$cancel_link' style='padding: 10px; background: red; color: white;'>Cancel</a>
             ";
 
             send_email($email, "Confirm Your Registration", $message);
 
-            $stmt = $conn->prepare("INSERT INTO pending_users (username, email, password_hash, token) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $username, $email, $hashed_password, $token);
+            // 存入 pending_users
+            $stmt = $conn->prepare("INSERT INTO pending_users (username, email, password_hash, gender, date_of_birth, phone_number, picture, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssss", $user_account, $email, $password_hash, $gender, $date_of_birth, $phone_number, $imagePath, $token);
             $stmt->execute();
 
             echo "<script>alert('A confirmation email has been sent!'); window.location.href='login.php';</script>";
@@ -49,115 +89,145 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
     <title>Register</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            padding-top: 40px;
+            background-color:rgb(53, 64, 75);
         }
-
         .register-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 400px;
             border: 1px solid #ccc;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
+            background-color:rgb(255, 255, 255);
         }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="file"] {
+            width: 100%;
             padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+            margin-top: 8px;
+            margin-bottom: 12px;
             border: 1px solid #ccc;
-            width: 250px;
-            box-sizing: border-box;
+            border-radius: 5px;
+            box-sizing: border-box; 
         }
-
-        .input-container {
+        .gender-group {
             display: flex;
             align-items: center;
-            position: relative;
-            width: 250px;
+            margin-top: 8px;
+            margin-bottom: 16px;
         }
-
-        .eye-icon {
+        .gender-group label {
+            margin-right: 10px;
+        }
+        #eye-icon {
             cursor: pointer;
             position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-            background: none;
-            border: none;
+            right: 5px;
+            top: 16px;
         }
-
-        input[type="password"] {
-            width: 100%;
-            padding-right: 30px;
-            box-sizing: border-box;
+        .error {
+            color: red;
+            font-size: 13px;
         }
-
         button[type="submit"] {
-            padding: 10px 20px;
-            border: none;
+            width: 100%;
+            padding: 10px;
             background-color: #007bff;
             color: white;
-            cursor: pointer;
+            border: none;
+            margin-top: 10px;
             border-radius: 5px;
         }
-
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
-
-        .login {
-                    font-size: 13px;
-                    margin-left: 116px;
-                    position: absolute;
-                    margin-top: -39px;
-                    }
+        .preview-img {
+            margin-top: 10px;
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
-
 <body>
-    <div class="register-container">
-        <h2>Register</h2>
-        <form method="POST">
-            <input type="text" name="username" required placeholder="Username"><br>
-            <input type="email" name="email" required placeholder="Email"><br>
+<div class="register-container">
+    <h2>Register Member</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
 
-            <div class="input-container">
-                <input type="password" id="password" name="password" required placeholder="Password">
-                <span id="eye-icon" class="eye-icon" onclick="togglePassword()">👁️</span>
-            </div>
+        <div style="position: relative;">
+            <input type="password" name="password" id="password" placeholder="Password" required oninput="validatePassword(this.value)">
+            <span id="eye-icon" onclick="togglePassword()">👁️</span>
+        </div>
+        <div id="password-error" class="error" style="display: none;">
+            Password must contain at least one letter, one number, and be at least 8 characters.
+        </div>
 
-            <button type="submit">Register</button>
-            <p><a href="login.php" class="login">Already have account?</a></p>
-        </form>
-    </div>
+        <label>Upload Profile Picture:</label>
+        <input type="file" name="profile" accept="image/*" required onchange="previewImage(event)">
+        <img id="preview" class="preview-img" src="#" style="display:none;"/>
+        
+        <!-- 显示错误信息 -->
+        <?php if (isset($photo_error)) : ?>
+            <div class="error"><?php echo $photo_error; ?></div>
+        <?php endif; ?>
 
-    <script>
-        function togglePassword() {
-            var passwordInput = document.getElementById("password");
-            var eyeIcon = document.getElementById("eye-icon");
+        <label>Phone Number:</label>
+        <input type="text" name="phone_number" id="phone_number" placeholder="Enter phone number" required oninput="validatePhoneNumber(this.value)">
+        <div id="phone-error" class="error" style="display: none;">
+            Phone number must be 8 to 15 digits.
+        </div>
 
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-            } else {
-                passwordInput.type = "password";
-            }
-        }
-    </script>
+        <label>Gender:</label>
+        <div class="gender-group">
+            <input type="radio" id="male" name="gender" value="M" required>
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="F">
+            <label for="female">Female</label>
+        </div>
+
+        <label>Date of Birth:</label>
+        <input type="date" name="date_of_birth" required>
+
+        <button type="submit">Register</button>
+        <p style="text-align:center; margin-top: 10px;"><a href="login.php">Already have an account?</a></p>
+    </form>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    }
+
+    function validatePassword(value) {
+        const error = document.getElementById("password-error");
+        const valid = /[A-Za-z]/.test(value) && /\d/.test(value) && value.length >= 8;
+        error.style.display = value && !valid ? "block" : "none";
+    }
+
+    function validatePhoneNumber(value) {
+        const error = document.getElementById("phone-error");
+        const valid = /^\d{8,15}$/.test(value);
+        error.style.display = value && !valid ? "block" : "none";
+    }
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const preview = document.getElementById("preview");
+            preview.src = reader.result;
+            preview.style.display = "block";
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
 </body>
-
 </html>
