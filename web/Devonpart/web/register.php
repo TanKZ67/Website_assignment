@@ -11,8 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
 
-    if (!preg_match("/[A-Za-z]/", $password) || !preg_match("/\d/", $password)) {
-        echo "<script>alert('Password must contain at least one letter and one number!');</script>";
+    if (!preg_match("/[A-Za-z]/", $password) || !preg_match("/\d/", $password) || strlen($password) < 8) {
+        echo "<script>alert('Password must contain at least one letter, one number, and be at least 8 characters long!');</script>";
     } else {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
