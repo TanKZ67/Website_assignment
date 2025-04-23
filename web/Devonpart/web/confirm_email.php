@@ -5,7 +5,8 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
     $token = $_GET['token'];
     $email = $_GET['email'];
 
-    $stmt = $conn->prepare("SELECT username, password_hash FROM pending_users WHERE email = ? AND token = ?");
+    $stmt = $conn->prepare("SELECT username, password_hash, email, gender, date_of_birth, phone_number, picture FROM pending_users WHERE email = ? AND token = ?");
+
     $stmt->bind_param("ss", $email, $token);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -13,8 +14,18 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
 
-        $stmt_insert = $conn->prepare("INSERT INTO user_profile (user_account,user_account_old, email, password_hash) VALUES (?,?, ?, ?)");
-        $stmt_insert->bind_param("ssss", $row['username'],$row['username'], $email, $row['password_hash']);
+
+        $user_account = $row['username'];
+        $password_hash = $row['password_hash'];
+        $gender = $row['gender'];
+        $date_of_birth = $row['date_of_birth'];
+        $phone_number = $row['phone_number'];
+        $imagePath = $row['picture'];
+
+
+        $stmt_insert = $conn->prepare("INSERT INTO user_profile (user_account, email, password_hash, gender, date_of_birth, phone_number, picture) " .
+            "VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt_insert->bind_param("sssssss", $user_account, $email, $password_hash, $gender, $date_of_birth, $phone_number, $imagePath);
         $stmt_insert->execute();
 
         $stmt_delete = $conn->prepare("DELETE FROM pending_users WHERE email = ?");
@@ -26,4 +37,3 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
         echo "<h1>Invalid or Expired Token!</h1><p>The token you used has either expired or is invalid. Please request a new confirmation email.</p>";
     }
 }
-?>

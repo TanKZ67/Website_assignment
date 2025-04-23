@@ -16,34 +16,36 @@ $stored_otp = [];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST['action'] ?? '';
 
-    // ✅ 管理员登录逻辑
+    // ✅ 管理员登录逻辑（用 email 登录）
     if ($action === '' || $action === 'login') {
-        $username = $_POST['username'] ?? '';
+        $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        if (empty($username) || empty($password)) {
-            echo "Username or password missing";
+        if (empty($email) || empty($password)) {
+            echo "Email or password missing";
             exit;
         }
 
-        $stmt = $conn->prepare("SELECT admin_password FROM admin WHERE admin_name = ?");
-        $stmt->bind_param("s", $username);
+        $stmt = $conn->prepare("SELECT admin_email, admin_password FROM admin WHERE admin_email = ?");
+        $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $hashed_password_from_db = $row['admin_password'];
+            $admin_email = $row['admin_email'];
 
             if (password_verify($password, $hashed_password_from_db)) {
                 $_SESSION['is_admin'] = true;
-                $_SESSION['admin_name'] = $username;
+                $_SESSION['admin_email'] = $email;
+                $_SESSION['admin_email'] = $admin_email;
                 echo "success";
             } else {
                 echo "Incorrect password";
             }
         } else {
-            echo "Incorrect username";
+            echo "Incorrect email";
         }
         $stmt->close();
     }
@@ -51,15 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ✅ 发送 OTP
     elseif ($action === 'send_otp') {
         $email = $_POST['to_email'] ?? '';
-        $username = $_SESSION['admin_name'] ?? '';
+        $admin_email = $_SESSION['admin_email'] ?? '';
 
-        if (empty($email) || empty($username)) {
-            echo json_encode(["success" => false, "message" => "Email or username missing"]);
+        if (empty($email) || empty($admin_email)) {
+            echo json_encode(["success" => false, "message" => "Email missing"]);
             exit;
         }
 
         $otp = rand(1000, 9999);
-        $otp_key = $email . '_' . $username;
+        $otp_key = $email;
         $stored_otp[$otp_key] = $otp;
 
         echo json_encode(["success" => true, "otp" => $otp]);
@@ -72,9 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $otp = $_POST['otp'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
-        $username = $_SESSION['admin_name'] ?? '';
+        $admin_email = $_SESSION['admin_email'] ?? '';
 
-        if (empty($email) || empty($otp) || empty($new_password) || empty($confirm_password) || empty($username)) {
+        if (empty($email) || empty($otp) || empty($new_password) || empty($confirm_password) || empty($admin_email)) {
             echo "All fields are required";
             exit;
         }
@@ -84,12 +86,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        $otp_key = $email . '_' . $username;
+        $otp_key = $email;
         if (isset($stored_otp[$otp_key]) && $stored_otp[$otp_key] == $otp) {
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-            $stmt = $conn->prepare("UPDATE admin SET admin_password = ? WHERE admin_name = ?");
-            $stmt->bind_param("ss", $hashed_password, $username);
+            $stmt = $conn->prepare("UPDATE admin SET admin_password = ? WHERE admin_email = ?");
+            $stmt->bind_param("ss", $hashed_password, $email);
 
             if ($stmt->execute()) {
                 unset($stored_otp[$otp_key]);
@@ -103,25 +105,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // ✅ 重置密码
+    // ✅ 重置密码（用 email）
     elseif ($action === 'reset_password') {
-        $username = $_POST['username'] ?? '';
+        $email = $_POST['email'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
 
-        if (empty($username) || empty($new_password)) {
+        if (empty($email) || empty($new_password)) {
             echo "All fields are required";
             exit;
         }
 
-        $stmt = $conn->prepare("SELECT admin_name FROM admin WHERE admin_name = ?");
-        $stmt->bind_param("s", $username);
+        $stmt = $conn->prepare("SELECT admin_email FROM admin WHERE admin_email = ?");
+        $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE admin SET admin_password = ? WHERE admin_name = ?");
-            $stmt->bind_param("ss", $hashed_password, $username);
+            $stmt = $conn->prepare("UPDATE admin SET admin_password = ? WHERE admin_email = ?");
+            $stmt->bind_param("ss", $hashed_password, $email);
 
             if ($stmt->execute()) {
                 echo "success";
@@ -129,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Password update fail";
             }
         } else {
-            echo "username does not exist";
+            echo "email does not exist";
         }
         $stmt->close();
     }
