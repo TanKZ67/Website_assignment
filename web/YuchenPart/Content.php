@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="square"> 
-        <h1> Admin Login <hr></h1>
+        <h1> Login <hr></h1>
         <form id="loginForm">
             <h3>Email:</h3>
             <input id="EMAIL" name="email" type="email" placeholder="Enter admin email" required>
@@ -51,13 +51,16 @@
                 })
                 .then(response => response.text())
                 .then(data => {
-                    console.log("Server response:", data);
-                    if (data === "success") {
-                        window.location.href = "Aftersignin.php";
-                    } else {
-                        alert(data);
-                    }
-                })
+    console.log("Server response:", data);
+    if (data === "admin_success") {
+        window.location.href = "Aftersignin.php";
+    } else if (data === "user_success") {
+        window.location.href = "http://localhost/a/Website_assignment/web/LeonPart/Code/index2.php";
+    } else {
+        alert(data);
+    }
+})
+
                 .catch(error => console.error("Error:", error));
             });
         </script>

@@ -20,54 +20,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($action === '' || $action === 'login') {
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-
+    
         if (empty($email) || empty($password)) {
             echo "Email or password missing";
             exit;
         }
-
+    
+        // 先检查 admin 表
         $stmt = $conn->prepare("SELECT admin_email, admin_password FROM admin WHERE admin_email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
-
+    
         if ($result->num_rows > 0) {
+            // 是管理员
             $row = $result->fetch_assoc();
-            $hashed_password_from_db = $row['admin_password'];
-            $admin_email = $row['admin_email'];
-
-            if (password_verify($password, $hashed_password_from_db)) {
+            if (password_verify($password, $row['admin_password'])) {
                 $_SESSION['is_admin'] = true;
-                $_SESSION['admin_email'] = $email;
-                $_SESSION['admin_email'] = $admin_email;
-                echo "success";
+                $_SESSION['admin_email'] = $row['admin_email'];
+                echo "admin_success"; // ✅ 前端根据这个跳转到 Aftersignin.php
+            } else {
+                echo "Incorrect password";
+            }
+            $stmt->close();
+            exit;
+        }
+    
+        $stmt->close();
+    
+        // 再检查 user 表
+        $stmt = $conn->prepare("SELECT email, password_hash FROM user_profile WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            // 是用户
+            $row = $result->fetch_assoc();
+            if (password_verify($password, $row['password_hash'])) {
+                $_SESSION['is_user'] = true;
+                $_SESSION['email'] = $row['email'];
+                echo "user_success"; // ✅ 前端根据这个跳转到 index2.php
             } else {
                 echo "Incorrect password";
             }
         } else {
-            echo "Incorrect email";
+            echo "Email not found";
         }
+    
         $stmt->close();
-    }
-
-    // ✅ 发送 OTP
-    elseif ($action === 'send_otp') {
-        $email = $_POST['to_email'] ?? '';
-        $admin_email = $_SESSION['admin_email'] ?? '';
-
-        if (empty($email) || empty($admin_email)) {
-            echo json_encode(["success" => false, "message" => "Email missing"]);
-            exit;
-        }
-
-        $otp = rand(1000, 9999);
-        $otp_key = $email;
-        $stored_otp[$otp_key] = $otp;
-
-        echo json_encode(["success" => true, "otp" => $otp]);
         exit;
     }
-
+    
     // ✅ 验证 OTP 并更新密码
     elseif ($action === 'verify_otp_and_update') {
         $email = $_POST['to_email'] ?? '';
@@ -109,42 +113,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif ($action === 'reset_password') {
         $email = $_POST['email'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
-
+    
         if (empty($email) || empty($new_password)) {
             echo "All fields are required";
             exit;
         }
-
+    
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+    
+        // 检查 admin 表
         $stmt = $conn->prepare("SELECT admin_email FROM admin WHERE admin_email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
-
+    
         if ($result->num_rows > 0) {
-            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare("UPDATE admin SET admin_password = ? WHERE admin_email = ?");
             $stmt->bind_param("ss", $hashed_password, $email);
-
             if ($stmt->execute()) {
                 echo "success";
             } else {
-                echo "Password update fail";
+                echo "Password update failed";
+            }
+            $stmt->close();
+            exit;
+        }
+    
+        $stmt->close();
+    
+        // 再检查 user_profile 表
+        $stmt = $conn->prepare("SELECT email FROM user_profile WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $stmt = $conn->prepare("UPDATE user_profile SET password_hash = ? WHERE email = ?");
+            $stmt->bind_param("ss", $hashed_password, $email);
+            if ($stmt->execute()) {
+                echo "success";
+            } else {
+                echo "Password update failed";
             }
         } else {
             echo "email does not exist";
         }
         $stmt->close();
     }
-
-    // ✅ 检查管理员登录状态
-    elseif ($action === 'check_session') {
-        if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
-            echo "logged_in";
-        } else {
-            echo "not_logged_in";
-        }
-    }
 }
-
-$conn->close();
+        
+    
+    
 ?>
