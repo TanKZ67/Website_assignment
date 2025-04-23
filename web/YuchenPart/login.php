@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        $stmt = $conn->prepare("SELECT admin_name, admin_password FROM admin WHERE admin_email = ?");
+        $stmt = $conn->prepare("SELECT admin_email, admin_password FROM admin WHERE admin_email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -34,12 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $hashed_password_from_db = $row['admin_password'];
-            $admin_name = $row['admin_name'];
+            $admin_email = $row['admin_email'];
 
             if (password_verify($password, $hashed_password_from_db)) {
                 $_SESSION['is_admin'] = true;
                 $_SESSION['admin_email'] = $email;
-                $_SESSION['admin_name'] = $admin_name;
+                $_SESSION['admin_email'] = $admin_email;
                 echo "success";
             } else {
                 echo "Incorrect password";

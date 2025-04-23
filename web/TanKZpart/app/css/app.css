@@ -251,7 +251,23 @@ input[type="radio"]+label {
   /* 选中时的字体颜色 */
 }
 
+#options {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin-left:45px;
+  width: 100px;
+}
 
+#options.show {
+  max-height: 1000px; /* 根据内容调整 */
+  width: 100px;
+}
+
+.security{
+  cursor: pointer;
+  margin-left: 37px;
+}
 
 .DateOfBirth {
   margin-left: 5px;

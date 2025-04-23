@@ -23,8 +23,8 @@ include 'app/lib/query.php';
 
     <div class="LeftSideBodden">
 
-    <img src="app/image/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
-        <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "Unknow", 0, 10, 'UTF-8') ."......" ; ?></P>
+        <img src="app/image/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
+        <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "Unknow", 0, 10, 'UTF-8') . "......"; ?></P>
         <a href="index.php" class="editprofile">Edit Profile</a>
         <hr style="margin-top: 40px;" color="white">
         <a href="index.php" class="closeline">
@@ -36,9 +36,13 @@ include 'app/lib/query.php';
             <p class="AddressLabel">Address</p>
         </a>
 
-        <a href="program/security.php" class="closeline"    >
-            <p class="AddressLabel">Security</p>
-        </a>
+        <p onclick="toggleOptions()" class="security">Security</p>
+
+        <div id="options">
+            <a href="../Devonpart/reset_password.php" style="color:grey; display: inline-block; text-decoration: none;">reset password</a>
+            <a href="app/page/logout.php" style="margin-top: 10px; display: inline-block; color:grey;text-decoration: none;">logout</a>
+        </div>
+
     </div>
 
 
@@ -82,9 +86,9 @@ include 'app/lib/query.php';
 
                     <label class="EmailLabel">E-mail</label>
                     <div class="EmailTextLabel"><?php echo $row["email"] ?? ""  ?></div>
-                    <?php if (empty($row["email"])) echo' <input type="button" value="add" id="emailSubmit" class="emailSubmit2">';
-                            else  echo'<input type="button" value="change" id="emailSubmit" class="emailSubmit">';?>
-                    
+                    <?php if (empty($row["email"])) echo ' <input type="button" value="add" id="emailSubmit" class="emailSubmit2">';
+                    else  echo '<input type="button" value="change" id="emailSubmit" class="emailSubmit">'; ?>
+
 
                 </div>
 
@@ -92,9 +96,9 @@ include 'app/lib/query.php';
 
                     <label class="PhoneNumberLabel">Phone Number</label>
                     <div class="PhoneNumberTextLabel"> <?php echo $row["phone_number"] ?? ""  ?> </div>
-                    <?php if (empty($row["phone_number"])) echo' <input type="button" value="add" id="PhoneNumberSubmit">';
-                        else  echo'<input type="button" value="change" id="PhoneNumberSubmit" class="PhoneNumberSubmit">';?>
-                   
+                    <?php if (empty($row["phone_number"])) echo ' <input type="button" value="add" id="PhoneNumberSubmit">';
+                    else  echo '<input type="button" value="change" id="PhoneNumberSubmit" class="PhoneNumberSubmit">'; ?>
+
                 </div>
 
 
@@ -160,3 +164,10 @@ include 'app/lib/query.php';
     </div>
 
 </body>
+
+<script>
+  function toggleOptions() {
+    const opt = document.getElementById("options");
+    opt.classList.toggle("show");
+  }
+</script>

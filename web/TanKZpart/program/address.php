@@ -22,9 +22,9 @@ include '../app/lib/addressfetch.php';
     <div>
 
         <div class="LeftSideBodden">
-        
+
             <img src="../app/image/<?php echo basename($row['picture'] ?? '../../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
-       
+
             <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "NO", 0, 10, 'UTF-8') . "...."; ?></P>
             <a href="../index.php" class="editprofile">Edit Profile</a>
             <hr style="margin-top: 40px;" color="white">
@@ -37,9 +37,12 @@ include '../app/lib/addressfetch.php';
                 <p class="AddressLabel">Address</p>
             </a>
 
-            <a href="../program/security.php" class="closeline"    >
-            <p class="AddressLabel">Security</p>
-        </a>
+            <p onclick="toggleOptions()" class="security">Security</p>
+
+            <div id="options">
+                <a href="../../Devonpart/reset_password.php" style="color:grey; display: inline-block; text-decoration: none;">reset password</a>
+                <a href="../app/page/logout.php" style="margin-top: 10px; display: inline-block; color:grey;text-decoration: none;">logout</a>
+            </div>
         </div>
 
 
@@ -62,7 +65,7 @@ include '../app/lib/addressfetch.php';
                     while ($addrow = mysqli_fetch_assoc($select)) { ?>
                         <tr>
                             <td>
-                            <a href="../app/lib/addressfetchbyaddressid.php?edit=<?php echo $addrow['address_id']; ?>" class="edit" id="edit"> Edit</a>
+                                <a href="../app/lib/addressfetchbyaddressid.php?edit=<?php echo $addrow['address_id']; ?>" class="edit" id="edit"> Edit</a>
                             </td>
                             <td>
                                 <p class="addname"><?php echo $addrow["address_name"]; ?></p>
@@ -77,7 +80,7 @@ include '../app/lib/addressfetch.php';
                         </tr>
                     <?php } ?>
                 </tbody>
-                
+
 
 
             </div>
@@ -101,5 +104,12 @@ include '../app/lib/addressfetch.php';
             </div>
         </div>
 
-       
+
 </body>
+
+<script>
+  function toggleOptions() {
+    const opt = document.getElementById("options");
+    opt.classList.toggle("show");
+  }
+</script>
