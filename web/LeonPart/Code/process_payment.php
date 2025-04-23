@@ -10,14 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    $conn->beginTransaction(); // 事务开始
+    $conn->beginTransaction();
     
-    // ==================== 在这里添加库存检查代码 ====================
+    // ==================== Stock Check ====================
     $orderItems = json_decode($_POST['order_details'], true);
+    $productsInfo = []; // We'll use this later for the invoice
     
-    // 检查所有商品库存是否充足
     foreach ($orderItems as $item) {
-        $checkStmt = $conn->prepare("SELECT name, stock FROM products WHERE id = ?");
+        $checkStmt = $conn->prepare("SELECT id, name, price, stock, main_image FROM products WHERE id = ?");
         $checkStmt->execute([$item['product_id']]);
         $product = $checkStmt->fetch();
         
@@ -25,7 +25,7 @@ try {
             $conn->rollBack();
             echo json_encode([
                 'success' => false, 
-                'message' => "The product does not exist or has been removed from sale"
+                'message' => "The product '{$item['name']}' does not exist or has been removed from sale"
             ]);
             exit();
         }
@@ -34,74 +34,81 @@ try {
             $conn->rollBack();
             echo json_encode([
                 'success' => false, 
-                'message' => "Product {$product['name']} has insufficient stock (remaining: {$product['stock']})"
+                'message' => "Product '{$product['name']}' has insufficient stock (remaining: {$product['stock']})"
             ]);
             exit();
         }
+        
+        // Store product info for invoice
+        $productsInfo[] = [
+            'id' => $product['id'],
+            'name' => $product['name'],
+            'price' => $product['price'],
+            'image' => $product['main_image'],
+            'quantity' => $item['quantity'],
+            'size' => $item['size'],
+            'color' => $item['color']
+        ];
     }
-    // ==================== 库存检查代码结束 ====================
+    // ==================== End Stock Check ====================
     
-     // 1. 创建订单
-     $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, payment_method) 
-     VALUES (?, ?, ?)");
-$stmt->execute([
-$_SESSION['user_id'],
-$_POST['total_amount'],
-$_POST['payment_method']
-]);
-$orderId = $conn->lastInsertId();
-
-// 2. 添加订单项并更新库存
-$orderItems = json_decode($_POST['order_details'], true);
-$orderItemStmt = $conn->prepare("INSERT INTO order_items 
-    (order_id, product_id, product_name, quantity, price, size, color) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-$updateStockStmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
-
-foreach ($orderItems as $item) {
-// 添加订单项
-$orderItemStmt->execute([
-$orderId,
-$item['product_id'],
-$item['name'],
-$item['quantity'],
-$item['price'],
-$item['size'],
-$item['color']
-]);
-
-// 更新库存
-$updateStockStmt->execute([
-$item['quantity'],
-$item['product_id']
-]);
-}
-
-// 3. 清空购物车
-$stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-
-$historyStmt = $conn->prepare("INSERT INTO order_history 
-(user_id, order_id, product_name, quantity, price, payment_method, total_amount) 
-VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-foreach ($orderItems as $item) {
-$historyStmt->execute([
-    $_SESSION['user_id'],
-    $orderId,
-    $item['name'],
-    $item['quantity'],
-    $item['price'],
-    $_POST['payment_method'],
-    $_POST['total_amount']
-]);
-}
+    // 1. Create Order
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, payment_method) 
+                          VALUES (?, ?, ?)");
+    $stmt->execute([
+        $_SESSION['user_id'],
+        $_POST['total_amount'],
+        $_POST['payment_method']
+    ]);
+    $orderId = $conn->lastInsertId();
+    
+    // 2. Add Order Items and Update Stock
+    $orderItemStmt = $conn->prepare("INSERT INTO order_items 
+                                   (order_id, product_id, product_name, quantity, price, size, color) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?)");
+    
+    $updateStockStmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
+    
+    foreach ($orderItems as $item) {
+        // Add order item
+        $orderItemStmt->execute([
+            $orderId,
+            $item['product_id'],
+            $item['name'],
+            $item['quantity'],
+            $item['price'],
+            $item['size'],
+            $item['color']
+        ]);
+        
+        // Update stock
+        $updateStockStmt->execute([
+            $item['quantity'],
+            $item['product_id']
+        ]);
+    }
+    
+    // 3. Clear Cart
+    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
     
     $conn->commit();
-    echo json_encode(['success' => true, 'order_id' => $orderId]);
+    
+    // Prepare invoice data
+    $invoiceData = [
+        'success' => true,
+        'invoice' => [
+            'order_id' => $orderId,
+            'order_date' => date('Y-m-d H:i:s'),
+            'payment_method' => $_POST['payment_method'],
+            'total_amount' => $_POST['total_amount'],
+            'items' => $productsInfo
+        ]
+    ];
+    
+    echo json_encode($invoiceData);
+    
 } catch (PDOException $e) {
     $conn->rollBack();
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
-?>
