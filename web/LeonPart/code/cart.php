@@ -219,7 +219,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h1>Shopping Cart</h1>
     <ul id="cartItems"></ul>
     <div class="total">Total: $<span id="cartTotal">0</span></div>
-    <button onclick="window.location.href = 'index.php'">Continue Shopping</button>
+    <button onclick="window.location.href = 'index2.php'">Continue Shopping</button>
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
@@ -365,7 +365,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     button.style.cursor = 'pointer';
                 }
             });
-
+//haha
             // 也禁用继续购物和支付按钮
             document.querySelector('button[onclick="window.location.href = \'index.php\'"]').disabled = disabled;
             document.getElementById('proceedToPayment').disabled = disabled;
@@ -509,8 +509,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         restoreUIAfterPayment();
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
+                .catch(error => {                    console.error('Error:', error);
                     alert("Payment processing error");
                     // 出错时也恢复界面交互
                     restoreUIAfterPayment();
