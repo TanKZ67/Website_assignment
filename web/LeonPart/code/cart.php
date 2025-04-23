@@ -24,6 +24,35 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="icon" href="\W1Demo\image\a7963aaa-618f-4c51-9f7e-e8699e81eed8.png">
     <title>Shopping Cart</title>
     <style>
+        /* Add to your existing styles */
+        #invoiceContent {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .invoice-total {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 15px;
+            text-align: right;
+        }
+
         .cart-item button:disabled {
             opacity: 0.5;
             cursor: not-allowed !important;
@@ -216,13 +245,115 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
         Payment Successful!.
     </div>
 
+    <!-- Add this right after the success-message div -->
+    <div id="invoiceModal" class="payment-modal">
+        <button class="close-button" style="position:relative;margin-left:360px;margin-top: 0px;"
+            onclick="closeInvoiceModal()">×</button>
+        <h3>Order Invoice</h3>
+        <div id="invoiceContent"></div>
+        <button onclick="printInvoice()">Print Invoice</button>
+        <button onclick="closeInvoiceModal()">Close</button>
+    </div>
+
     <h1>Shopping Cart</h1>
     <ul id="cartItems"></ul>
     <div class="total">Total: $<span id="cartTotal">0</span></div>
-    <button onclick="window.location.href = 'index2.php'">Continue Shopping</button>
+    <button onclick="window.location.href = 'index.php'">Continue Shopping</button>
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
+        // Add these new functions
+function displayInvoice(data) {
+    const invoiceModal = document.getElementById('invoiceModal');
+    const invoiceContent = document.getElementById('invoiceContent');
+    
+    // Format the invoice data
+    let invoiceHTML = `
+        <div class="invoice-header">
+            <p>Order #: ${data.order_id}</p>
+            <p>Date: ${new Date(data.order_date).toLocaleString()}</p>
+            <p>Payment Method: ${data.payment_method}</p>
+        </div>
+        <div class="invoice-items">
+            <h4>Items:</h4>
+    `;
+    
+    data.items.forEach(item => {
+        invoiceHTML += `
+            <div class="invoice-item">
+                <span>${item.name} (${item.quantity} × $${item.price})</span>
+                <span>$${(item.quantity * item.price).toFixed(2)}</span>
+            </div>
+        `;
+    });
+    
+    invoiceHTML += `
+        <div class="invoice-total">
+            <p>Total: $${data.total_amount}</p>
+        </div>
+    `;
+    
+    invoiceContent.innerHTML = invoiceHTML;
+    invoiceModal.style.display = 'block';
+}
+
+function closeInvoiceModal() {
+    document.getElementById('invoiceModal').style.display = 'none';
+}
+
+function printInvoice() {
+    const invoiceContent = document.getElementById('invoiceContent').innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = `
+        <div style="width: 80%; margin: 0 auto; padding: 20px;">
+            <h2 style="text-align: center;">Order Invoice</h2>
+            ${invoiceContent}
+        </div>
+    `;
+    
+    window.print();
+    document.body.innerHTML = originalContent;
+    updateCartDisplay(); // Refresh the cart display after printing
+}
+
+// Modify the form submit handler to show the invoice
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    if (!validateForm()) {
+        return;
+    }
+
+    const formData = new FormData(this);
+
+    fetch('process_payment.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('paymentModal').style.display = 'none';
+                restoreUIAfterPayment();
+                
+                // Clear the cart
+                cartItems = [];
+                updateCartDisplay();
+                
+                // Display the invoice instead of the simple success message
+                displayInvoice(data.invoice);
+            } else {
+                alert(data.message || "Payment failed");
+                restoreUIAfterPayment();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Payment processing error");
+            restoreUIAfterPayment();
+        });
+});
         // 全局变量存储购物车项
         let cartItems = <?php echo json_encode($cartItems); ?>;
 
@@ -365,7 +496,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     button.style.cursor = 'pointer';
                 }
             });
-//haha
+
             // 也禁用继续购物和支付按钮
             document.querySelector('button[onclick="window.location.href = \'index.php\'"]').disabled = disabled;
             document.getElementById('proceedToPayment').disabled = disabled;
@@ -509,7 +640,8 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         restoreUIAfterPayment();
                     }
                 })
-                .catch(error => {                    console.error('Error:', error);
+                .catch(error => {
+                    console.error('Error:', error);
                     alert("Payment processing error");
                     // 出错时也恢复界面交互
                     restoreUIAfterPayment();
