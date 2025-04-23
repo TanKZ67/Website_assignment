@@ -18,9 +18,9 @@ include 'app/lib/query.php';
 <body>
 
     <iframe name="hiddenframe" style="display: none;"></iframe>
-
-
-
+<a href="../LeonPart/Code/index2.php">
+    <img src="app/image/importan_icon/giphy.gif" class="img">
+    </a>
     <div class="LeftSideBodden">
 
         <img src="app/image/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
