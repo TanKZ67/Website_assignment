@@ -93,19 +93,49 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <title>Register</title>
     <style>
+        .important-icon{
+            position:absolute;
+            height: 350px;
+            width: 480px;
+            transform: translate(-430px,390px);
+        }
+        .container{
+            position:absolute;
+            height: 250px;
+            width: 600px;
+            background-color: rgb(255, 255, 255);            
+            transform: translate(-430px,100px);
+        }
+        h1{
+            transform: translate(60px,-50px);
+            font-size: 115px;
+            color:rgb(250, 41, 41);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            font-style: italic;
+            font-size: 30px;
+        }
+        h3 {
+            font-size: 50px;
+            transform: translate(65px,-130px);
+            color:rgb(102, 31, 255);
+        }        
         body {
             font-family: Arial;
             display: flex;
             justify-content: center;
             padding-top: 40px;
-            background-color:rgb(53, 64, 75);
+            background-color:rgb(170, 231, 255);
         }
         .register-container {
             width: 400px;
             border: 1px solid #ccc;
             padding: 25px;
-            border-radius: 10px;
-            background-color:rgb(255, 255, 255);
+            border-radius: 15px;
+            background-color:rgb(101, 196, 220);
+            transform: translate(400px,60px);
         }
         input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="file"] {
             width: 100%;
@@ -115,6 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box; 
+            background-color: white;
         }
         .gender-group {
             display: flex;
@@ -155,6 +186,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </style>
 </head>
 <body>
+<div class="container">
+<h1>TARUMT</h1>
+<h3>ONLINE SHOPPING</h3>
+
+    </div>
+    <img src="../../TanKZpart/app/image/importan_icon/giphy.gif" alt="Important Icon"  class ="important-icon" >
+
 <div class="register-container">
     <h2>Register Member</h2>
     <form method="POST" enctype="multipart/form-data">
