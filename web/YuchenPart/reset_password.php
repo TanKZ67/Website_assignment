@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-    <link rel = "stylesheet" href = "reset_password.css">
+    <link rel="stylesheet" href="reset_password.css">
 </head>
 <body>
     <div class="container">
         <h2>Change password</h2>
         <form id="resetPasswordForm">
             <div class="form-group">
-                <label for="username">Username：</label>
-                <input type="text" id="username" name="username" required>
+                <label for="email">Email：</label>
+                <input type="email" id="email" name="email" required>
                 <span id="usernameError" class="error"></span>
             </div>
             <div class="form-group">
@@ -21,7 +21,7 @@
                 <span id="newPasswordError" class="error"></span>
             </div>
             <div class="form-group">
-                <label for="confirmPassword">Comfirm new password：</label>
+                <label for="confirmPassword">Confirm new password：</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
                 <span id="confirmPasswordError" class="error"></span>
             </div>
@@ -33,21 +33,19 @@
         document.getElementById("resetPasswordForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
-            let username = document.getElementById("username").value.trim();
+            let email = document.getElementById("email").value.trim();
             let newPassword = document.getElementById("newPassword").value.trim();
             let confirmPassword = document.getElementById("confirmPassword").value.trim();
             let usernameError = document.getElementById("usernameError");
             let newPasswordError = document.getElementById("newPasswordError");
             let confirmPasswordError = document.getElementById("confirmPasswordError");
 
-            // 清空错误提示
             usernameError.textContent = "";
             newPasswordError.textContent = "";
             confirmPasswordError.textContent = "";
 
-            // 客户端验证
-            if (username === "") {
-                usernameError.textContent = "Please enter username";
+            if (email === "") {
+                usernameError.textContent = "Please enter email";
                 return;
             }
             if (newPassword === "") {
@@ -55,18 +53,17 @@
                 return;
             }
             if (confirmPassword === "") {
-                confirmPasswordError.textContent = "Please comfirm password";
+                confirmPasswordError.textContent = "Please confirm password";
                 return;
             }
             if (newPassword !== confirmPassword) {
-                confirmPasswordError.textContent = "The new password and the confirmed password do not match";
+                confirmPasswordError.textContent = "Passwords do not match";
                 return;
             }
 
-            // 发送请求到后端
             let formData = new FormData();
             formData.append("action", "reset_password");
-            formData.append("username", username);
+            formData.append("email", email);
             formData.append("new_password", newPassword);
 
             fetch("login.php", {
@@ -77,9 +74,9 @@
             .then(data => {
                 if (data === "success") {
                     alert("Password changed successfully");
-                    window.location.href = "Content.php"; // 跳转回登录页
+                    window.location.href = "Content.php";
                 } else {
-                    alert(data); // 显示错误信息
+                    alert(data);
                 }
             })
             .catch(error => console.error("Error:", error));
