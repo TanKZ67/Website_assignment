@@ -258,7 +258,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h1>Shopping Cart</h1>
     <ul id="cartItems"></ul>
     <div class="total">Total: $<span id="cartTotal">0</span></div>
-    <button onclick="window.location.href = 'index.php'">Continue Shopping</button>
+    <button onclick="window.location.href = 'index2.php'">Continue Shopping</button>
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
