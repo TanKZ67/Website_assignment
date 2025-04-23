@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
         $stmt->bind_param("ssss", $token, $created_at, $expires_at, $email);
         $stmt->execute();
 
-        $reset_link = "http://localhost/reset_password.php?token=$token";
+        $reset_link = "http://localhost/a/Website_assignment/web/Devonpart/reset_password.php?token=$token";
         $message = "Click this link to reset your password: <a href='$reset_link'>$reset_link</a>";
         send_email($email, "Password Reset Request", $message);
 
