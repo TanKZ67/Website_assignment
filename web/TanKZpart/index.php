@@ -39,7 +39,7 @@ include 'app/lib/query.php';
         <p onclick="toggleOptions()" class="security">Security</p>
 
         <div id="options">
-            <a href="../Devonpart/reset_password.php" style="color:grey; display: inline-block; text-decoration: none;">reset password</a>
+            <a href="../Devonpart/web/forgot_password.php" style="color:grey; display: inline-block; text-decoration: none;">reset password</a>
             <a href="app/page/logout.php" style="margin-top: 10px; display: inline-block; color:grey;text-decoration: none;">logout</a>
         </div>
 
