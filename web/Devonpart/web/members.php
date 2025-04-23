@@ -1,9 +1,10 @@
 <?php
+session_start();
 require __DIR__ . '/config/db.php'; 
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-$sql = "SELECT username, email FROM user_profile WHERE username LIKE ?";
+$sql = "SELECT user_account, email FROM user_profile WHERE user_account LIKE ?";
 $stmt = $conn->prepare($sql);
 $searchTerm = "%{$search}%";
 $stmt->bind_param("s", $searchTerm);
@@ -83,7 +84,7 @@ $result = $stmt->get_result();
         </tr>
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
-                <td><?php echo htmlspecialchars($row["username"]); ?></td>
+                <td><?php echo htmlspecialchars($row["user_account"]); ?></td>
                 <td><?php echo htmlspecialchars($row["email"]); ?></td>
             </tr>
         <?php endwhile; ?>

@@ -385,7 +385,7 @@ require_once 'db_connection.php';
         .search-container {
             position: absolute;
             bottom: 5px;
-            right: 600px;
+            right: 425px;
             display: inline-block;
         }
 
@@ -480,13 +480,14 @@ require_once 'db_connection.php';
         }
 
         a:hover {
+
             color: pink;
         }
 
 
         #promotionimage {
             position: relative;
-            margin-left: 480px;
+            margin-left: 375px;
             width: 50%;
             height: 300px;
             overflow: hidden;
@@ -584,7 +585,7 @@ require_once 'db_connection.php';
         <nav class="login">
             <a class="category-toggle" onclick="toggleSidebar()">☰ Categories</a>|
             <a href="../../TanKZpart/index.php">My Profile</a>|
-            <a href="http://localhost/W1Demo/content.php">Admin</a>|
+            <a href="http://localhost/a/Website_assignment/web/YuchenPart/Content.php">Admin</a> |
             <a href="order_history.php">Order History</a>
         </nav>
 
@@ -596,7 +597,7 @@ require_once 'db_connection.php';
             <button class="close-button" onclick="closeCart()">×</button>
         </div>
 
-        <h1 style="color:white;font-size: 30px; position:absolute;right:730px; bottom:25px; "><img style="height: 40px"
+        <h1 style="color:white;font-size: 30px; position:absolute;right:570px; bottom:25px; "><img style="height: 40px"
                 src="\W1Demo\image\giphy.gif" alt="Clothes-Gif">TARUMT Clothes Shop<img style="height: 40px"
                 src="\W1Demo\image\giphy.gif" alt="Clothes-Gif"></h1>
     </div>

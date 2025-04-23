@@ -1,0 +1,120 @@
+.UpBlock {
+    position: fixed;
+    background-color: rgb(120, 172, 85);
+    height: 130px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+body {
+    color: rgb(0, 0, 0);
+    background-color: rgb(223, 223, 223)
+}
+
+.moveup{
+margin-top: -15px;
+}
+
+.LeftSideBodden {
+    position: absolute;
+    width: 200px;
+    height: 300px;
+    margin-left: 330px;
+    margin-top: 180px;
+}
+
+.UserImage2 {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    object-fit: fill;
+    position: absolute;
+
+}
+
+.user_account2 {
+    margin-left: 67px;
+    margin-top: 5px;
+    color: black;
+
+}
+
+.editprofile {
+    margin-left: 67px;
+    margin-top: -10px;
+    color: black;
+    position: absolute;
+    text-decoration: none;
+}
+
+.closeline {
+    text-decoration: none;
+}
+
+.usericon {
+    margin-top: 10px;
+    margin-left: 5px;
+    height: 20px;
+    width: 20px;
+}
+
+.labelMyaccount {
+
+    margin-left: 38px;
+    margin-top: -22px;
+    color: black;
+}
+
+
+
+.AddressLabel {
+    margin-left: 38px;
+
+    color: black;
+}
+
+.profileblock {
+    background-color: rgb(255, 255, 255);
+    height: 530px;
+    width: 870px;
+    transform: translate(560px, -53px);
+    text-align: left;
+    padding-left: 30px;
+    padding-top: 20px;
+    padding-right: 30px;
+    margin-top: 200px;
+    position: absolute;
+}
+
+.myprofile {
+    margin-top: 0px;
+    color: rgb(0, 0, 0);
+    font-size: 30px;
+}
+
+.hr{
+    width: 931px;
+    position: absolute;
+    transform: translate(559px,235px);
+    z-index: 100; 
+}
+
+.manageP {
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    margin-top: -30px;
+}
+
+.movedown{
+    margin-top: 40px;
+}
+
+div.MOVEDOWN{
+    margin-top: 80px;
+}
+
+.rsps{
+    color: black;
+}

@@ -36,6 +36,9 @@ include 'app/lib/query.php';
             <p class="AddressLabel">Address</p>
         </a>
 
+        <a href="program/security.php" class="closeline"    >
+            <p class="AddressLabel">Security</p>
+        </a>
     </div>
 
 
@@ -74,14 +77,6 @@ include 'app/lib/query.php';
                 }
                 ?>
 
-
-
-                <div class="moveDown">
-
-                    <label for="user_Name_Label" class="userNameLabel">Name</label>
-                    <input type="text" id="user_Name_Label" class="userNameTextLabel" name="username" value="<?php echo $row["username"] ?? ""  ?>">
-
-                </div>
 
                 <div class="moveDown">
 

@@ -51,8 +51,8 @@ if (isset($_GET['token'])) {
 
                 if (empty($new_password)) {
                     $error_message = "Password cannot be empty!";
-                } elseif (!preg_match("/[A-Za-z]/", $new_password) || !preg_match("/\d/", $new_password)) {
-                    $error_message = "Password must contain at least one letter and one number!";
+                } elseif (!preg_match("/[A-Za-z]/", $new_password) || !preg_match("/\d/", $new_password) || strlen($new_password) < 8) {
+                    $error_message = "Password must contain at least one letter, one number, and be at least 8 characters long!";
                 } else {
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 

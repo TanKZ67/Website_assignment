@@ -267,6 +267,7 @@ input[type="radio"]+label {
   width: 410px;
   height: 30px;
   margin-left: 100px;
+  margin-top: 50px;
   font-size: 20px;
 }
 
