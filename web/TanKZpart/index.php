@@ -23,7 +23,7 @@ include 'app/lib/query.php';
     </a>
     <div class="LeftSideBodden">
 
-        <img src="app/image/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
+        <img src="../Devonpart/web/uploads/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
         <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "Unknow", 0, 10, 'UTF-8') . "......"; ?></P>
         <a href="index.php" class="editprofile">Edit Profile</a>
         <hr style="margin-top: 40px;" color="white">
@@ -61,7 +61,7 @@ include 'app/lib/query.php';
         ?>
         <form method="post" action="app/page/image.php" enctype="multipart/form-data" id="uploadimg" target="hiddenframe">
             <div class="imageUpdateBoss" id="imageUpdate">
-                <img src="app/image/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage">
+            <img src="../Devonpart/web/uploads/<?php echo basename($row['picture'] ?? '../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage">
                 <input type="file" accept="image/*" class="imgaccept" name="picture" id="imageupload">
             </div>
         </form>
@@ -83,13 +83,10 @@ include 'app/lib/query.php';
 
 
                 <div class="moveDown">
-
                     <label class="EmailLabel">E-mail</label>
                     <div class="EmailTextLabel"><?php echo $row["email"] ?? ""  ?></div>
                     <?php if (empty($row["email"])) echo ' <input type="button" value="add" id="emailSubmit" class="emailSubmit2">';
                     else  echo '<input type="button" value="change" id="emailSubmit" class="emailSubmit">'; ?>
-
-
                 </div>
 
                 <div class="moveDown">
