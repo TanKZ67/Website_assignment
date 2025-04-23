@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // For testing only - remove this in production
 
 
