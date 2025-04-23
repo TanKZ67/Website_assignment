@@ -8,7 +8,7 @@ include '../app/lib/addressfetch.php';
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="../app/css/address.css">
+    <link rel="stylesheet" href="../app/css/security.css">
     <script src="../app/js/address.js" defer></script>
 </head>
 
@@ -22,9 +22,9 @@ include '../app/lib/addressfetch.php';
     <div>
 
         <div class="LeftSideBodden">
-        
+
             <img src="../app/image/<?php echo basename($row['picture'] ?? '../../image/default-avatar-icon-of-social-media-user-vector.jpg'); ?>" alt="Current Image" class="UserImage2">
-       
+
             <P class="user_account2"> <?php echo mb_substr($row["user_account"] ?? "NO", 0, 10, 'UTF-8') . "...."; ?></P>
             <a href="../index.php" class="editprofile">Edit Profile</a>
             <hr style="margin-top: 40px;" color="white">
@@ -37,17 +37,25 @@ include '../app/lib/addressfetch.php';
                 <p class="AddressLabel">Address</p>
             </a>
 
-            <a href="security.php" class="closeline"    >
-            <p class="AddressLabel">Security</p>
-        </a>
+            <a href="security.php" class="closeline">
+                <p class="AddressLabel">Security</p>
+            </a>
         </div>
 
 
         <div class="profileblock">
             <p class="myprofile">Security</p>
+
+            <div class="MOVEDOWN"></div>
+            <a href="../../Devonpart/web/forgot_password.php" class="closeline">
+                <p class="rsps">reset password</p>
+            </a>
+            <a href="../app/page/logout.php" class="closeline">
+                <P class="rsps">logout</P>
+            </a>
         </div>
 
-    
 
-       
+
+
 </body>
