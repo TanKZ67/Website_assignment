@@ -235,7 +235,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="date" name="date_of_birth" required>
 
         <button type="submit">Register</button>
-        <p style="text-align:center; margin-top: 10px;"><a href="login.php">Already have an account?</a></p>
+        <p style="text-align:center; margin-top: 10px;"><a href="../../YuchenPart/Content.php">Already have an account?</a></p>
     </form>
 </div>
 
