@@ -357,6 +357,8 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         // 支付成功处理
                         document.getElementById('paymentModal').style.display = 'none';
                         document.getElementById('successMessage').style.display = 'block';
+                        
+                        
                         cartItems = [];
                         updateCartDisplay();
 
@@ -659,50 +661,6 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return true;
         }
-
-        // 处理表单提交
-        document.getElementById('paymentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            if (!validateForm()) {
-                return;
-            }
-
-            const formData = new FormData(this);
-
-            fetch('process_payment.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('successMessage').style.display = 'block';
-                        document.getElementById('paymentModal').style.display = 'none';
-
-                        // 支付成功后恢复界面交互
-                        restoreUIAfterPayment();
-
-                        // 清空购物车
-                        cartItems = [];
-                        updateCartDisplay();
-
-                        setTimeout(() => {
-                            document.getElementById('successMessage').style.display = 'none';
-                        }, 3000);
-                    } else {
-                        alert(data.message || "Payment failed");
-                        // 支付失败也恢复界面交互
-                        restoreUIAfterPayment();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Payment processing error");
-                    // 出错时也恢复界面交互
-                    restoreUIAfterPayment();
-                });
-        });
 
         // 新增函数：支付后恢复UI
         function restoreUIAfterPayment() {
