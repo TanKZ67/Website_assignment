@@ -169,6 +169,14 @@ margin-top: -10px;
     margin-top: -10px;
 }
 
+.img{
+    position: absolute;
+    width: 220px;
+    height: 130px;
+    transform: translate(50px,0px);
+    z-index: 9999;
+  }
+  
 #options {
     max-height: 0;
     overflow: hidden;

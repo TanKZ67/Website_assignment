@@ -141,7 +141,13 @@ body {
   left: 10px;
 }
 
-
+.img{
+  position: absolute;
+  width: 220px;
+  height: 130px;
+  transform: translate(50px,0px);
+  z-index: 9999;
+}
 
 .userAccountLabel {
   margin-left: 1px;
