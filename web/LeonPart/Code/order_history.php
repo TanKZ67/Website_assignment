@@ -51,7 +51,6 @@ try {
         table { border-collapse: collapse; width: 90%; margin: 20px auto; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
         th { background-color: #f2f2f2; }
-        .product-name { cursor: pointer; color: blue; text-decoration: underline; }
         .no-orders { text-align: center; font-size: 18px; margin-top: 40px; color: #666; }
 
         .pagination { text-align: center; margin-top: 20px; }
@@ -68,31 +67,6 @@ try {
         }
 
         .total-quantity { text-align: right; width: 90%; margin: 10px auto; font-weight: bold; }
-
-        #imageModal {
-            display: none;
-            position: fixed;
-            z-index: 999;
-            padding-top: 60px;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6);
-        }
-        #imageModal img {
-            display: block;
-            margin: auto;
-            max-width: 80%;
-            max-height: 80%;
-            border-radius: 10px;
-        }
-        #imageModal .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -117,9 +91,7 @@ try {
             <tr>
                 <td><?= $counter++ ?></td>
                 <td><?= htmlspecialchars($order['order_id']) ?></td>
-                <td class="product-name" onclick="showImage('<?= htmlspecialchars($order['product_name']) ?>')">
-                    <?= htmlspecialchars($order['product_name']) ?>
-                </td>
+                <td><?= htmlspecialchars($order['product_name']) ?></td>
                 <td><?= htmlspecialchars($order['quantity']) ?></td>
                 <td><?= number_format($order['price'], 2) ?></td>
                 <td><?= htmlspecialchars($order['payment_method']) ?></td>
@@ -150,35 +122,5 @@ try {
             <?php endif; ?>
         </div>
     <?php endif; ?>
-
-    <!-- Modal -->
-    <div id="imageModal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <img id="productImage" src="" alt="Product Image">
-    </div>
-
-    <script>
-    function showImage(productName) {
-    const imageMap = {
-        "Cropped short-sleeved sweatshirt": "/a/WEBSITE_ASSIGNMENT/web/YuchenPart/W1Demo/image/3d6b5b0bf2811207034d2ff4279dd615861b0d3f.avif",
-        "Slim Fit Cotton twill trousers": "product_images/slimfit.jpg",
-        "Barrel-leg jeans": "product_images/barrel.jpg",
-        "Flared Leg Low Jeans": "product_images/flared.jpg"
-        // Add more mappings as needed
-    };
-
-    const imagePath = imageMap[productName];
-    const modal = document.getElementById('imageModal');
-    const img = document.getElementById('productImage');
-
-    if (imagePath) {
-        img.src = imagePath;
-        modal.style.display = 'block';
-    } else {
-        alert("No image found for this product.");
-    }
-}
-
-    </script>
 </body>
 </html>
