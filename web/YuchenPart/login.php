@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['is_user'] = true;
                 $_SESSION['email'] = $row['email'];
                 $_SESSION['user_id'] = $row['user_id']; // ✅ 这里存 user_id 方便之后使用
-                echo "user_success"; // ✅ 前端根据这个跳转到 index2.php
+                echo "user_success"; 
             } else {
                 echo "Incorrect password";
             }
