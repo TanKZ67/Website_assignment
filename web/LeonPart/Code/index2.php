@@ -3,11 +3,6 @@ session_start();
 
 // For testing only - remove this in production
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
 require_once 'db_connection.php';
 ?>
 
@@ -588,9 +583,8 @@ require_once 'db_connection.php';
 
         <nav class="login">
             <a class="category-toggle" onclick="toggleSidebar()">☰ Categories</a>|
-            <a href="">Sign Up</a>|
-            <a href="../../TanKZpart/index.php">My Profile</a>|
-            <a href="http://localhost/a/Website_assignment/web/YuchenPart/Content.php">Admin</a> |
+            <a href="../../Devonpart/web/register.php">Sign Up</a>|
+            <a href="../../YuchenPart/Content.php">Login</a> |
             <a href="order_history.php">Order History</a>
         </nav>
 
