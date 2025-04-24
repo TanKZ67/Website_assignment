@@ -2,10 +2,10 @@
 session_start();
 
 // For testing only - remove this in production
-$_SESSION['user_id'] = 28;
+
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: index2.php");
     exit();
 }
 

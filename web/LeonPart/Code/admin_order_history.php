@@ -2,21 +2,51 @@
 session_start();
 require_once 'db_connection.php';
 
-// 检查管理员是否已登录
+// Check if admin is logged in
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     echo "Please log in as admin to view all order histories.";
     exit();
 }
 
+// Pagination settings
+$recordsPerPage = 10; // Display 10 orders per page
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+$offset = ($page - 1) * $recordsPerPage;
+
+// Ensure pagination parameters are integers
+$recordsPerPage = (int) $recordsPerPage;
+$offset = (int) $offset;
+
 try {
-    // 管理员：获取所有订单历史
+    // Get total number of orders
+    $countStmt = $conn->prepare("
+        SELECT COUNT(*) as total 
+        FROM order_history
+    ");
+    $countStmt->execute();
+    $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+    // Calculate total pages
+    $totalPages = ceil($totalRecords / $recordsPerPage);
+
+    // Fetch orders for the current page
     $stmt = $conn->prepare("
         SELECT user_id, order_id, product_name, quantity, price, payment_method, total_amount, paid_at 
         FROM order_history 
         ORDER BY paid_at DESC
+        LIMIT $recordsPerPage OFFSET $offset
     ");
     $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Calculate total quantity for all orders (not just the current page)
+    $totalQuantityStmt = $conn->prepare("
+        SELECT SUM(quantity) as total_quantity 
+        FROM order_history
+    ");
+    $totalQuantityStmt->execute();
+    $totalQuantity = (int) $totalQuantityStmt->fetch(PDO::FETCH_ASSOC)['total_quantity'];
+
 } catch (PDOException $e) {
     echo "Failed to retrieve order history: " . $e->getMessage();
     exit();
@@ -33,6 +63,20 @@ try {
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
         th { background-color: #f2f2f2; }
         .no-orders { text-align: center; font-size: 18px; margin-top: 40px; color: #666; }
+        .pagination { text-align: center; margin-top: 20px; }
+        .pagination a {
+            margin: 0 5px;
+            padding: 6px 12px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+        .pagination a.active {
+            font-weight: bold;
+            text-decoration: underline;
+            background-color: #eee;
+        }
+        .total-quantity { text-align: right; width: 90%; margin: 10px auto; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -41,6 +85,7 @@ try {
     <?php if (count($orders) > 0): ?>
         <table>
             <tr>
+                <th>No.</th>
                 <th>User ID</th>
                 <th>Order ID</th>
                 <th>Product</th>
@@ -50,8 +95,13 @@ try {
                 <th>Total</th>
                 <th>Paid At</th>
             </tr>
-            <?php foreach ($orders as $order): ?>
+            <?php
+            // Calculate the starting number for the current page
+            $startNumber = ($page - 1) * $recordsPerPage + 1;
+            $counter = $startNumber;
+            foreach ($orders as $order): ?>
             <tr>
+                <td><?= $counter++ ?></td>
                 <td><?= htmlspecialchars($order['user_id']) ?></td>
                 <td><?= htmlspecialchars($order['order_id']) ?></td>
                 <td><?= htmlspecialchars($order['product_name']) ?></td>
@@ -63,8 +113,28 @@ try {
             </tr>
             <?php endforeach; ?>
         </table>
+        <!-- Display total quantity for all orders -->
+        <div class="total-quantity">
+            Total Quantity (All Orders): <?= $totalQuantity ?>
+        </div>
     <?php else: ?>
         <p class="no-orders">No orders found.</p>
+    <?php endif; ?>
+
+    <?php if ($totalPages > 1): ?>
+        <div class="pagination">
+            <?php if ($page > 1): ?>
+                <a href="?page=<?= $page - 1 ?>">« Previous</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="?page=<?= $i ?>" class="<?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
+            <?php endfor; ?>
+
+            <?php if ($page < $totalPages): ?>
+                <a href="?page=<?= $page + 1 ?>">Next »</a>
+            <?php endif; ?>
+        </div>
     <?php endif; ?>
 </body>
 </html>
