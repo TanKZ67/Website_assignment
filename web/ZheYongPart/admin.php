@@ -23,7 +23,6 @@ if (isset($_POST['add_product'])) {
    $description = trim($_POST['description']);
    $product_image = $_FILES['product_image']['name'] ?? '';
    $product_image_tmp_name = $_FILES['product_image']['tmp_name'] ?? '';
-   move_uploaded_file($tmp_name, "W1Demo/image/" . $product_image);
    $upload_folder = 'W1Demo/image/';
    $main_image_url =  '/' . $main_image_path; // for displaying later
 
@@ -113,6 +112,9 @@ if (isset($_POST['add_product'])) {
    // Convert colors to JSON format for storage
    $colors_json = json_encode($colors);
 
+
+
+
    // Insert product into the database
    if (empty($errors)) {
       $insert = "INSERT INTO products (name, price, category, main_image, colors, description, stock) 
@@ -166,11 +168,11 @@ if (isset($_POST['add_product'])) {
 
    ?>
 
+
 <a href="/a/Website_assignment/web/YuchenPart/Aftersignin.php"
    style="display: block; width: 10%; cursor: pointer; border-radius: .5rem; margin-top: 1rem; font-size: 1.7rem; padding: 1rem 3rem; background: var(--green); color: var(--white); text-align:center;">
    Back
 </a>
-
 
 
    <div class="container">
@@ -250,102 +252,60 @@ if (isset($_POST['add_product'])) {
 
       </div>
 
+      <!-- Filter and Search Section -->
+      <form action="" method="get">
+         <input type="text" name="query" placeholder="Search products by name" value="<?php echo htmlspecialchars($_GET['query'] ?? ''); ?>">
+         <select name="category">
+            <option value="">All Categories</option>
+            <option value="men" <?php echo (isset($_GET['category']) && $_GET['category'] === 'men') ? 'selected' : ''; ?>>Men</option>
+            <option value="women" <?php echo (isset($_GET['category']) && $_GET['category'] === 'women') ? 'selected' : ''; ?>>Women</option>
+            <option value="kids 2-8y" <?php echo (isset($_GET['category']) && $_GET['category'] === 'kids 2-8y') ? 'selected' : ''; ?>>Kids 2-8y</option>
+            <option value="kids 9-14y" <?php echo (isset($_GET['category']) && $_GET['category'] === 'kids 9-14y') ? 'selected' : ''; ?>>Kids 9-14y</option>
+         </select>
 
-      <!-- Search Bar -->
-      <script src="search.js"></script>
-      <input type="text" id="search" placeholder="Search Products..." class="box" onkeyup="searchProduct()">
+         <select name="price">
+            <option value="">All Prices</option>
+            <option value="1-10" <?php echo (isset($_GET['price']) && $_GET['price'] === '1-10') ? 'selected' : ''; ?>>$1 - $10</option>
+            <option value="11-20" <?php echo (isset($_GET['price']) && $_GET['price'] === '11-20') ? 'selected' : ''; ?>>$11 - $20</option>
+            <option value="21-30" <?php echo (isset($_GET['price']) && $_GET['price'] === '21-30') ? 'selected' : ''; ?>>$21 - $30</option>
+            <option value="31-1000" <?php echo (isset($_GET['price']) && $_GET['price'] === '31-1000') ? 'selected' : ''; ?>>$31 - $1000</option>
+         </select>
 
 
+         <button type="submit" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; 
+              text-align: center; text-decoration: none; display: inline-block; 
+              font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px;">Search</button>
 
-      <select id="priceRange" class="box">
-         <option value="all">All Prices</option>
-         <option value="1-10">1 - 10</option>
-         <option value="11-20">11 - 20</option>
-         <option value="21-30">21 - 30</option>
-         <option value="31-50">31 - 50</option>
-         <option value="51-100">51 - 100</option>
-         <option value="100-1000">100 - 1000</option>
-      </select>
-
-      <select id="categoryFilter" class="box">
-         <option value="">All Categories</option>
-         <option value="men">Men</option>
-         <option value="women">Women</option>
-         <option value="kids 2-8y">Kids 2-8y</option>
-         <option value="kids 9-14y">Kids 9-14y</option>
-      </select>
-
+         <a href="admin.php" style="background-color: #f44336; color: white; border: none; padding: 10px 20px; 
+              text-align: center; text-decoration: none; display: inline-block; 
+              font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px;">Reset</a>
+      </form>
 
 
 
    </div>
 
-   <script>
-      function searchAndFilterProducts() {
-         let query = document.getElementById("search").value.trim().toLowerCase();
-         let selectedCategory = document.getElementById("categoryFilter").value.toLowerCase();
-         let priceRange = document.getElementById("priceRange").value;
-
-         let minPrice = null,
-            maxPrice = null;
-
-         if (priceRange && priceRange !== "all") {
-            let range = priceRange.split("-");
-            minPrice = parseFloat(range[0]);
-            maxPrice = parseFloat(range[1]);
-         }
-
-         fetch(`search.php?query=${encodeURIComponent(query)}`)
-            .then(response => response.text())
-            .then(data => {
-               document.getElementById("product-list").innerHTML = data;
-
-               let rows = document.querySelectorAll("#product-list tr");
-               let found = false; // Track if any row matches
-
-               rows.forEach(row => {
-                  let productName = row.children[2]?.textContent.toLowerCase() || "";
-                  let productPrice = parseFloat(row.children[3]?.textContent) || 0;
-                  let productCategory = row.children[4]?.textContent.toLowerCase() || "";
-
-                  let matchesSearch = productName.includes(query) || row.children[0]?.textContent.includes(query);
-                  let matchesCategory = (selectedCategory === "" || productCategory === selectedCategory);
-                  let matchesPrice = (!minPrice || (productPrice >= minPrice && productPrice <= maxPrice));
-
-                  if (matchesSearch && matchesCategory && matchesPrice) {
-                     row.style.display = "";
-                     found = true;
-                  } else {
-                     row.style.display = "none";
-                  }
-               });
-
-               // If no product matches, insert a row saying "No products found"
-               if (!found) {
-                  document.getElementById("product-list").innerHTML = `
-                  <tr>
-                      <td colspan="7" style="text-align: center; font-weight: bold;">
-                          No products found
-                      </td>
-                  </tr>
-              `;
-               }
-            })
-            .catch(error => console.error("Error fetching data:", error));
-      }
-
-      // Attach event listeners
-      document.getElementById("search").addEventListener("keyup", searchAndFilterProducts);
-      document.getElementById("categoryFilter").addEventListener("change", searchAndFilterProducts);
-      document.getElementById("priceRange").addEventListener("change", searchAndFilterProducts);
-      document.addEventListener("DOMContentLoaded", searchAndFilterProducts);
-   </script>
 
    <div class="product-display">
       <h1>Product List</h1>
+      <?php
+      // Count total number of all products (no filters)
+      $all_result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM products");
+      $all_row = mysqli_fetch_assoc($all_result);
+      $all_products = $all_row['total'];
+   
+      ?>
+      <p style="font-size: 18px; margin-bottom: 10px;">
+         <strong>Total Products:</strong> <?php echo $all_products; ?>
+
+      </p>
+
+
+
       <table class="product-display-table">
          <thead>
             <tr>
+               <th>Product No</th>
                <th>Product ID</th>
                <th>Product Image</th>
                <th>Product Name</th>
@@ -359,52 +319,103 @@ if (isset($_POST['add_product'])) {
          </thead>
          <tbody id="product-list">
             <?php
-            $select = mysqli_query($conn, "SELECT * FROM products");
+            $limit = 5; // Number of items per page
+            $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+            $offset = ($page - 1) * $limit;
+            $counter = ($page - 1) * $limit + 1;
+
+            // Filter query parameters
+            $query = isset($_GET['query']) ? trim($_GET['query']) : '';
+            $category = isset($_GET['category']) ? $_GET['category'] : '';
+            $priceRange = isset($_GET['price']) ? $_GET['price'] : '';
+
+            $where = "WHERE 1"; // default condition for filtering
+            if ($query) {
+               $where .= " AND name LIKE '%" . mysqli_real_escape_string($conn, $query) . "%'";
+            }
+            if ($category) {
+               $where .= " AND category = '" . mysqli_real_escape_string($conn, $category) . "'";
+            }
+            if ($priceRange && $priceRange !== 'all') {
+               $priceBounds = explode('-', $priceRange);
+               if (count($priceBounds) == 2) {
+                  $minPrice = (float) $priceBounds[0];
+                  $maxPrice = (float) $priceBounds[1];
+                  $where .= " AND price BETWEEN $minPrice AND $maxPrice";
+               }
+            }
 
 
-            while ($row = mysqli_fetch_assoc($select)) { ?>
-               <tr>
-                  <td><?php echo $row['id']; ?></td>
-                  <td><img src="<?php echo  $row['main_image']; ?>" height="100"></td>
+            // Get total number of filtered products
+            $total_result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM products $where");
+            $total_row = mysqli_fetch_assoc($total_result);
+            $total_products = $total_row['total'];
+            $total_pages = ceil($total_products / $limit);
 
-                  <td><?php echo $row['name']; ?></td>
-                  <td><?php echo $row['price']; ?></td>
-                  <td><?php echo $row['category']; ?></td>
-                  <td>
-                     <?php
-                     $colors = json_decode($row['colors'], true);
-                     if ($colors && is_array($colors)) {
-                        foreach ($colors as $colorInfo) {
-                           echo '<div style="margin-bottom: 15px;">';
-                           echo '<strong>' . htmlspecialchars($colorInfo['color']) . '</strong><br>';
-                           echo '<img src="' . htmlspecialchars($colorInfo['image']) . '" height="80" style="margin-top: 5px;"><br>';
-                           echo '</div>';
+            // Fetch the filtered products for the current page
+            $select = mysqli_query($conn, "SELECT * FROM products $where LIMIT $limit OFFSET $offset");
+
+            if (mysqli_num_rows($select) == 0) {
+               echo '<tr><td colspan="9" style="text-align: center;">No products found.</td></tr>';
+            } else {
+               while ($row = mysqli_fetch_assoc($select)) { ?>
+                  <tr>
+                     <td><?php echo $counter++; ?></td>
+                     <td><?php echo $row['id']; ?></td>
+                     <td><img src="<?php echo  $row['main_image']; ?>" height="100"></td>
+
+                     <td><?php echo $row['name']; ?></td>
+                     <td><?php echo $row['price']; ?></td>
+                     <td><?php echo $row['category']; ?></td>
+                     <td>
+                        <?php
+                        $colors = json_decode($row['colors'], true);
+                        if ($colors && is_array($colors)) {
+                           foreach ($colors as $colorInfo) {
+                              echo '<div style="margin-bottom: 15px;">';
+                              echo '<strong>' . htmlspecialchars($colorInfo['color']) . '</strong><br>';
+                              echo '<img src="' . htmlspecialchars($colorInfo['image']) . '" height="80" style="margin-top: 5px;"><br>';
+                              echo '</div>';
+                           }
+                        } else {
+                           echo 'No colors available';
                         }
-                     } else {
-                        echo 'No colors available';
-                     }
-                     ?>
-                  </td>
+                        ?>
+                     </td>
 
 
-                  <td><?php echo $row['description']; ?></td>
-                  <td><?php echo $row['stock']; ?></td>
-                  <td>
-                     <a href="update.php?edit=<?php echo $row['id']; ?>" class="btn"><i class="fas fa-edit"></i> Edit</a>
-                     <a href="admin.php?delete=<?php echo $row['id']; ?>" class="btn"><i class="fas fa-trash"></i> Delete</a>
-                  </td>
-               </tr>
+                     <td><?php echo $row['description']; ?></td>
+                     <td><?php echo $row['stock']; ?></td>
+                     <td>
+                        <a href="update.php?edit=<?php echo $row['id']; ?>" class="btn"><i class="fas fa-edit"></i> Edit</a>
+                        <a href="admin.php?delete=<?php echo $row['id']; ?>" class="btn"><i class="fas fa-trash"></i> Delete</a>
+                     </td>
+
+                  </tr>
+
+               <?php } ?>
             <?php } ?>
+
          </tbody>
       </table>
-   </div>
-   </div>
 
+   </div>
+   <div class="pagination">
+    <?php if ($page > 1): ?>
+        <a class="pagination-link" href="?page=<?php echo $page - 1; ?>&query=<?php echo urlencode($query); ?>&category=<?php echo urlencode($category); ?>&price=<?php echo urlencode($priceRange); ?>">&laquo; Prev</a>
+    <?php endif; ?>
 
+    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+        <a class="pagination-link <?php echo ($i == $page) ? 'active' : ''; ?>" href="?page=<?php echo $i; ?>&query=<?php echo urlencode($query); ?>&category=<?php echo urlencode($category); ?>&price=<?php echo urlencode($priceRange); ?>"><?php echo $i; ?></a>
+    <?php endfor; ?>
+
+    <?php if ($page < $total_pages): ?>
+        <a class="pagination-link" href="?page=<?php echo $page + 1; ?>&query=<?php echo urlencode($query); ?>&category=<?php echo urlencode($category); ?>&price=<?php echo urlencode($priceRange); ?>">Next &raquo;</a>
+    <?php endif; ?>
+</div>
 
 
 </body>
-
 
 
 </html>

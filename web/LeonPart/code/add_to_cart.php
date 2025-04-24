@@ -5,51 +5,58 @@ require_once 'db_connection.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Please login to add items to cart']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
 
 try {
-    // Check if product exists
-    $stmt = $conn->prepare("SELECT id, stock FROM products WHERE id = ?");
-    $stmt->execute([$data['product_id']]);
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    // 1. 检查产品库存
+    $productStmt = $conn->prepare("SELECT stock FROM products WHERE id = ?");
+    $productStmt->execute([$data['product_id']]);
+    $stock = $productStmt->fetchColumn();
     
-    if (!$product) {
-        echo json_encode(['success' => false, 'message' => 'Product not found']);
+    // 2. 计算购物车中该产品的总数量
+    $cartQtyStmt = $conn->prepare("SELECT COALESCE(SUM(quantity), 0) FROM cart 
+                                  WHERE user_id = ? AND product_id = ?");
+    $cartQtyStmt->execute([$_SESSION['user_id'], $data['product_id']]);
+    $cartQuantity = $cartQtyStmt->fetchColumn();
+    
+    // 3. 验证库存是否足够
+    if (($cartQuantity + $data['quantity']) > $stock) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Not enough stock available'
+        ]);
         exit();
     }
     
-    // Check stock availability
-    if ($product['stock'] < $data['quantity']) {
-        echo json_encode(['success' => false, 'message' => 'Not enough stock available']);
-        exit();
-    }
-    
-    // Check if item already in cart
-    $stmt = $conn->prepare("SELECT id, quantity FROM cart 
-                           WHERE user_id = ? AND product_id = ? AND size = ? AND color = ?");
-    $stmt->execute([
+    // 4. 检查是否已存在相同变体
+    $existingStmt = $conn->prepare("SELECT id, quantity FROM cart 
+                                   WHERE user_id = ? AND product_id = ? 
+                                   AND size = ? AND color = ?");
+    $existingStmt->execute([
         $_SESSION['user_id'],
         $data['product_id'],
         $data['size'],
         $data['color']
     ]);
-    $existingItem = $stmt->fetch(PDO::FETCH_ASSOC);
+    $existingItem = $existingStmt->fetch();
     
     if ($existingItem) {
-        // Update quantity if item exists
-        $newQuantity = $existingItem['quantity'] + $data['quantity'];
-        $stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
-        $stmt->execute([$newQuantity, $existingItem['id']]);
+        // 更新现有项数量
+        $updateStmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
+        $updateStmt->execute([
+            $existingItem['quantity'] + $data['quantity'],
+            $existingItem['id']
+        ]);
     } else {
-        // Add new item to cart
-        $stmt = $conn->prepare("INSERT INTO cart 
-            (user_id, product_id, quantity, size, color) 
-            VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([
+        // 添加新项
+        $insertStmt = $conn->prepare("INSERT INTO cart 
+                                    (user_id, product_id, quantity, size, color) 
+                                    VALUES (?, ?, ?, ?, ?)");
+        $insertStmt->execute([
             $_SESSION['user_id'],
             $data['product_id'],
             $data['quantity'],
@@ -58,9 +65,12 @@ try {
         ]);
     }
     
-    echo json_encode(['success' => true, 'message' => 'Item added to cart']);
+    echo json_encode(['success' => true]);
     
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
 ?>

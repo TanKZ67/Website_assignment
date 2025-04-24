@@ -3,6 +3,10 @@ session_start();
 
 // For testing only - remove this in production
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
 require_once 'db_connection.php';
 ?>
@@ -385,7 +389,7 @@ require_once 'db_connection.php';
         .search-container {
             position: absolute;
             bottom: 5px;
-            right: 600px;
+            right: 425px;
             display: inline-block;
         }
 
@@ -487,7 +491,7 @@ require_once 'db_connection.php';
 
         #promotionimage {
             position: relative;
-            margin-left: 480px;
+            margin-left: 375px;
             width: 50%;
             height: 300px;
             overflow: hidden;
@@ -584,8 +588,9 @@ require_once 'db_connection.php';
 
         <nav class="login">
             <a class="category-toggle" onclick="toggleSidebar()">☰ Categories</a>|
+            <a href="">Sign Up</a>|
             <a href="../../TanKZpart/index.php">My Profile</a>|
-            <a href="http://localhost/a/Website_assignment/web/YuchenPart/Content.php">Login</a> |
+            <a href="http://localhost/a/Website_assignment/web/YuchenPart/Content.php">Admin</a> |
             <a href="order_history.php">Order History</a>
         </nav>
 
@@ -597,7 +602,7 @@ require_once 'db_connection.php';
             <button class="close-button" onclick="closeCart()">×</button>
         </div>
 
-        <h1 style="color:white;font-size: 30px; position:absolute;right:730px; bottom:25px; "><img style="height: 40px"
+        <h1 style="color:white;font-size: 30px; position:absolute;right:570px; bottom:25px; "><img style="height: 40px"
                 src="\W1Demo\image\giphy.gif" alt="Clothes-Gif">TARUMT Clothes Shop<img style="height: 40px"
                 src="\W1Demo\image\giphy.gif" alt="Clothes-Gif"></h1>
     </div>
@@ -804,23 +809,36 @@ require_once 'db_connection.php';
         });
 
         function addToCartFromModal() {
-            if (!selectedSize) {
-                alert('Please select a size.');
-                return;
-            } else if (!selectedColor) {
-                alert('Please select a color.')
-                return;
-            }
+    if (!selectedSize) {
+        alert('Please select a size.');
+        return;
+    } else if (!selectedColor) {
+        alert('Please select a color.')
+        return;
+    }
 
-            const modal = document.getElementById('buyModal');
-            const modalName = document.getElementById('modalName').textContent.split(' - ')[0];
-            const modalPrice = parseFloat(document.getElementById('modalName').textContent.split(' - $')[1]);
-            const modalImage = document.getElementById('modalImage').src;
-            const productElement = document.querySelector('.product[data-name="' + modalName + '"]');
-            const productId = productElement ? productElement.getAttribute('data-id') : null;
+    const modal = document.getElementById('buyModal');
+    const modalName = document.getElementById('modalName').textContent.split(' - ')[0];
+    const modalPrice = parseFloat(document.getElementById('modalName').textContent.split(' - $')[1]);
+    const modalImage = document.getElementById('modalImage').src;
+    const productElement = document.querySelector('.product[data-name="' + modalName + '"]');
+    const productId = productElement ? productElement.getAttribute('data-id') : null;
+    const stock = parseInt(productElement.getAttribute('data-stock'));
 
-            if (!productId) {
-                alert('Product ID not found');
+    if (!productId) {
+        alert('Product ID not found');
+        return;
+    }
+
+    // First check current cart quantity for this product
+    fetch('check_cart_quantity.php?product_id=' + productId)
+        .then(response => response.json())
+        .then(data => {
+            const currentCartQuantity = data.quantity || 0;
+            const availableStock = stock - currentCartQuantity;
+            
+            if (quantity > availableStock) {
+                alert(`Only ${availableStock} items available in stock. You already have ${currentCartQuantity} in your cart.`);
                 return;
             }
 
@@ -833,29 +851,30 @@ require_once 'db_connection.php';
             };
 
             // Send to server
-            fetch('add_to_cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(cartItem)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Item added to cart successfully');
-                        updateCartDisplay();
-                        location.reload(); // 添加这行代码来刷新页面
-                        closeModal();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to add item to cart');
-                });
-        }
+            return fetch('add_to_cart.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cartItem)
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Item added to cart successfully');
+                updateCartDisplay();
+                location.reload();
+                closeModal();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to add item to cart');
+        });
+}
 
         // 更新购物车显示 - 完全基于数据库
 function updateCartDisplay() {

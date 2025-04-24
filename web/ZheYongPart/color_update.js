@@ -22,4 +22,3 @@ function removeColorInput(button) {
 
 
 
-jbahdbaggdyuhgawyudg

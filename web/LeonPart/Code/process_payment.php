@@ -12,65 +12,37 @@ if (!isset($_SESSION['user_id'])) {
 try {
     $conn->beginTransaction();
     
-    // ==================== Stock Check ====================
-    $orderItems = json_decode($_POST['order_details'], true);
-    $productsInfo = []; // We'll use this later for the invoice
-    
-    foreach ($orderItems as $item) {
-        $checkStmt = $conn->prepare("SELECT id, name, price, stock, main_image FROM products WHERE id = ?");
-        $checkStmt->execute([$item['product_id']]);
-        $product = $checkStmt->fetch();
-        
-        if (!$product) {
-            $conn->rollBack();
-            echo json_encode([
-                'success' => false, 
-                'message' => "The product '{$item['name']}' does not exist or has been removed from sale"
-            ]);
-            exit();
-        }
-        
-        if ($product['stock'] < $item['quantity']) {
-            $conn->rollBack();
-            echo json_encode([
-                'success' => false, 
-                'message' => "Product '{$product['name']}' has insufficient stock (remaining: {$product['stock']})"
-            ]);
-            exit();
-        }
-        
-        // Store product info for invoice
-        $productsInfo[] = [
-            'id' => $product['id'],
-            'name' => $product['name'],
-            'price' => $product['price'],
-            'image' => $product['main_image'],
-            'quantity' => $item['quantity'],
-            'size' => $item['size'],
-            'color' => $item['color']
-        ];
-    }
-    // ==================== End Stock Check ====================
-    
-    // 1. Create Order
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, payment_method) 
-                          VALUES (?, ?, ?)");
+    // 1. 创建订单
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, payment_method, order_date) 
+                          VALUES (?, ?, ?, NOW())");
     $stmt->execute([
         $_SESSION['user_id'],
         $_POST['total_amount'],
         $_POST['payment_method']
     ]);
     $orderId = $conn->lastInsertId();
-    
-    // 2. Add Order Items and Update Stock
+
+    // 2. 处理订单项和库存检查
+    $orderItems = json_decode($_POST['order_details'], true);
     $orderItemStmt = $conn->prepare("INSERT INTO order_items 
                                    (order_id, product_id, product_name, quantity, price, size, color) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?)");
     
     $updateStockStmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
+    $checkStockStmt = $conn->prepare("SELECT stock, name FROM products WHERE id = ? FOR UPDATE");
+    
+    $invoiceItems = []; // 用于生成发票数据
     
     foreach ($orderItems as $item) {
-        // Add order item
+        // 先检查库存是否充足
+        $checkStockStmt->execute([$item['product_id']]);
+        $product = $checkStockStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($product['stock'] < $item['quantity']) {
+            throw new Exception("Payment Success");
+        }
+        
+        // 添加订单项
         $orderItemStmt->execute([
             $orderId,
             $item['product_id'],
@@ -81,34 +53,47 @@ try {
             $item['color']
         ]);
         
-        // Update stock
+        // 扣减库存
         $updateStockStmt->execute([
             $item['quantity'],
             $item['product_id']
         ]);
+        
+        // 收集发票数据
+        $invoiceItems[] = [
+            'name' => $item['name'],
+            'price' => $item['price'],
+            'quantity' => $item['quantity'],
+            'size' => $item['size'],
+            'color' => $item['color']
+        ];
     }
-    
-    // 3. Clear Cart
+
+    // 3. 清空购物车
     $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     
     $conn->commit();
     
-    // Prepare invoice data
-    $invoiceData = [
+    // 返回完整的发票数据
+    echo json_encode([
         'success' => true,
         'invoice' => [
             'order_id' => $orderId,
             'order_date' => date('Y-m-d H:i:s'),
             'payment_method' => $_POST['payment_method'],
             'total_amount' => $_POST['total_amount'],
-            'items' => $productsInfo
-        ]
-    ];
+            'items' => $invoiceItems
+        ],
+        'message' => 'Payment successful. Stock updated.'
+    ]);
     
-    echo json_encode($invoiceData);
-    
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $conn->rollBack();
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
+?>

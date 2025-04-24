@@ -30,6 +30,29 @@
     </div>
 
     <script>
+        function validatePassword(password) {
+    const minLength = 3;
+    const maxLength = 10;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasSpecialChar = /[^a-zA-Z0-9]/.test(password); // 任意非字母数字字符
+
+    if (password.length < minLength || password.length > maxLength) {
+        return "Password must be between 3 and 10 characters long";
+    }
+    if (!hasUpperCase) {
+        return "Password must include at least one uppercase letter";
+    }
+    if (!hasLowerCase) {
+        return "Password must include at least one lowercase letter";
+    }
+    if (!hasSpecialChar) {
+        return "Password must include at least one special character";
+    }
+    return ""; // 验证通过
+}
+
+
         document.getElementById("resetPasswordForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -48,14 +71,23 @@
                 usernameError.textContent = "Please enter email";
                 return;
             }
+
             if (newPassword === "") {
                 newPasswordError.textContent = "Please enter password";
                 return;
             }
+
+            const passwordValidationMessage = validatePassword(newPassword);
+            if (passwordValidationMessage) {
+                newPasswordError.textContent = passwordValidationMessage;
+                return;
+            }
+
             if (confirmPassword === "") {
                 confirmPasswordError.textContent = "Please confirm password";
                 return;
             }
+
             if (newPassword !== confirmPassword) {
                 confirmPasswordError.textContent = "Passwords do not match";
                 return;
