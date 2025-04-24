@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->bind_param("ssssssss", $user_account, $email, $password_hash, $gender, $date_of_birth, $phone_number, $imagePath, $token);
             $stmt->execute();
 
-            echo "<script>alert('A confirmation email has been sent!'); window.location.href='login.php';</script>";
+            echo "<script>alert('A confirmation email has been sent!'); window.location.href='../../YuchenPart/content.php';</script>";
         }
     }
 }
@@ -235,7 +235,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="date" name="date_of_birth" required>
 
         <button type="submit">Register</button>
-        <p style="text-align:center; margin-top: 10px;"><a href="login.php">Already have an account?</a></p>
+        <p style="text-align:center; margin-top: 10px;"><a href="../../YuchenPart/Content.php">Already have an account?</a></p>
     </form>
 </div>
 

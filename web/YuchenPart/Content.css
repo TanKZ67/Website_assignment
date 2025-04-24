@@ -78,6 +78,15 @@ span {
     color: red;
 }
 
+#speciala a {
+    font-size: 14px;
+    color: #3498db;
+    text-decoration: none;
+    float: right;
+    position: absolute;
+    
+}
+
 /* 忘记密码链接 */
 #special a {
     font-size: 14px;
