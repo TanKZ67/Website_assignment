@@ -2,8 +2,6 @@
 session_start();
 
 // For testing only - remove this in production
-
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: index2.php");
     exit();
@@ -590,7 +588,7 @@ require_once 'db_connection.php';
         <nav class="login">
             <a class="category-toggle" onclick="toggleSidebar()">☰ Categories</a>|
             <a href="../../TanKZpart/index.php">My Profile</a>|
-            <a href="http://localhost/a/Website_assignment/web/YuchenPart/Content.php">Admin</a> |
+            <a href="http://localhost/a/Website_assignment/web/YuchenPart/Content.php">Admin</a>|
             <a href="order_history.php">Order History</a>
         </nav>
 

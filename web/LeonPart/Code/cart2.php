@@ -266,7 +266,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <ul id="cartItems"></ul>
     <div class="total">Total: $<span id="cartTotal">0</span></div>
     <div class="total-quantity">Total Items: <span id="cartQuantity">0</span></div>
-    <button onclick="window.location.href = 'index.php'">Continue Shopping</button>
+    <button onclick="window.location.href = 'index2.php'">Continue Shopping</button>
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
@@ -510,36 +510,9 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // 打开支付模态框
         function openPaymentModal() {
-            const paymentModal = document.getElementById('paymentModal');
-            const overlay = document.getElementById('modalOverlay');
-            const totalAmount = document.getElementById('cartTotal').textContent;
+            window.location.href = '../../YuchenPart/Content.php';
+            };
 
-            // 准备订单数据
-            const orderData = cartItems.map(item => ({
-                product_id: item.product_id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                size: item.size,
-                color: item.color
-            }));
-
-            document.getElementById('total_amount').value = totalAmount;
-            document.getElementById('order_details').value = JSON.stringify(orderData);
-
-            // 显示模态框和遮罩层
-            paymentModal.style.display = 'block';
-            overlay.style.display = 'block';
-            document.body.classList.add('modal-open');
-
-            // 禁用所有购物车按钮
-            disableCartButtons(true);
-        }
-        // 关闭支付模态框
-        function closePaymentModal() {
-            document.getElementById('paymentModal').style.display = 'none';
-            restoreUIAfterPayment(); // 使用统一的恢复函数
-        }
 
         // 禁用/启用购物车按钮函数
         function disableCartButtons(disabled) {
