@@ -16,7 +16,7 @@ $stored_otp = [];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST['action'] ?? '';
 
-    // ✅ 管理员登录逻辑（用 email 登录）
+    // ✅ 管理员/用户 登录逻辑
     if ($action === '' || $action === 'login') {
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -48,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
         $stmt->close();
     
-        // 再检查 user 表
-        $stmt = $conn->prepare("SELECT email, password_hash FROM user_profile WHERE email = ?");
+        // 再检查 user_profile 表
+        $stmt = $conn->prepare("SELECT user_id, email, password_hash FROM user_profile WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -60,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $row['password_hash'])) {
                 $_SESSION['is_user'] = true;
                 $_SESSION['email'] = $row['email'];
+                $_SESSION['user_id'] = $row['user_id']; // ✅ 这里存 user_id 方便之后使用
                 echo "user_success"; // ✅ 前端根据这个跳转到 index2.php
             } else {
                 echo "Incorrect password";
@@ -72,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
-    // ✅ 验证 OTP 并更新密码
+    // ✅ 验证 OTP 并更新密码（管理员用）
     elseif ($action === 'verify_otp_and_update') {
         $email = $_POST['to_email'] ?? '';
         $otp = $_POST['otp'] ?? '';
@@ -109,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // ✅ 重置密码（用 email）
+    // ✅ 重置密码（通用，admin/user都可以）
     elseif ($action === 'reset_password') {
         $email = $_POST['email'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
@@ -161,7 +162,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
     }
 }
-        
-    
-    
 ?>

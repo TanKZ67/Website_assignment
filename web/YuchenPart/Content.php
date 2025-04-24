@@ -55,7 +55,7 @@
     if (data === "admin_success") {
         window.location.href = "Aftersignin.php";
     } else if (data === "user_success") {
-        window.location.href = "http://localhost/a/Website_assignment/web/LeonPart/Code/index2.php";
+        window.location.href = "http://localhost/a/Website_assignment/web/LeonPart/Code/index.php";
     } else {
         alert(data);
     }

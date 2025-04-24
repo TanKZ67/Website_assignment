@@ -28,6 +28,11 @@ try {
                                    (order_id, product_id, product_name, quantity, price, size, color) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?)");
     
+    // 准备插入 order_history 表的语句
+    $historyStmt = $conn->prepare("INSERT INTO order_history 
+                                   (order_id, user_id, product_name, quantity, price, payment_method, total_amount, paid_at) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+    
     $updateStockStmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
     $checkStockStmt = $conn->prepare("SELECT stock, name FROM products WHERE id = ? FOR UPDATE");
     
@@ -43,7 +48,7 @@ try {
                               ". Available: ".$product['stock'].", Requested: ".$item['quantity']);
         }
         
-        // 添加订单项
+        // 添加订单项到 order_items 表
         $orderItemStmt->execute([
             $orderId,
             $item['product_id'],
@@ -52,6 +57,17 @@ try {
             $item['price'],
             $item['size'],
             $item['color']
+        ]);
+        
+        // 添加订单项到 order_history 表
+        $historyStmt->execute([
+            $orderId,
+            $_SESSION['user_id'],
+            $item['name'],
+            $item['quantity'],
+            $item['price'],
+            $_POST['payment_method'],
+            $_POST['total_amount']
         ]);
         
         // 扣减库存
