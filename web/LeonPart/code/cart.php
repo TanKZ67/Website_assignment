@@ -3,12 +3,12 @@ session_start();
 require_once 'db_connection.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../Devonpart/web/login");
+    header("Location: login.php");
     exit();
 }
 
 // Fetch cart items from database
-$stmt = $conn->prepare("SELECT c.id as cart_id, c.*, p.name, p.price, p.main_image 
+$stmt = $conn->prepare("SELECT c.id as cart_id, c.*, p.name, p.price, p.main_image, p.stock 
                        FROM cart c
                        JOIN products p ON c.product_id = p.id
                        WHERE c.user_id = ?");
@@ -258,7 +258,7 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h1>Shopping Cart</h1>
     <ul id="cartItems"></ul>
     <div class="total">Total: $<span id="cartTotal">0</span></div>
-    <button onclick="window.location.href = 'index2.php'">Continue Shopping</button>
+    <button onclick="window.location.href = 'index.php'">Continue Shopping</button>
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
@@ -317,7 +317,6 @@ function printInvoice() {
     updateCartDisplay(); // Refresh the cart display after printing
 }
 
-// Modify the form submit handler to show the invoice
 document.getElementById('paymentForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -326,31 +325,55 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     }
 
     const formData = new FormData(this);
+    
+    // 显示加载状态
+    const payButton = this.querySelector('button[type="submit"]');
+    payButton.disabled = true;
+    payButton.textContent = 'Processing...';
 
     fetch('process_payment.php', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
+                // 支付成功处理
                 document.getElementById('paymentModal').style.display = 'none';
-                restoreUIAfterPayment();
-                
-                // Clear the cart
+                document.getElementById('successMessage').style.display = 'block';
                 cartItems = [];
                 updateCartDisplay();
                 
-                // Display the invoice instead of the simple success message
-                displayInvoice(data.invoice);
+                // 显示发票
+                if (data.invoice) {
+                    displayInvoice(data.invoice);
+                }
+                
+                // 3秒后隐藏成功消息
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
             } else {
-                alert(data.message || "Payment failed");
-                restoreUIAfterPayment();
+                // 明确的支付失败处理
+                throw new Error(data.message || "Payment failed");
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert("Payment processing error");
+            // 错误处理
+            console.error('Payment Error:', error);
+            alert("Payment failed: " + error.message);
+            
+            // 恢复支付按钮状态
+            payButton.disabled = false;
+            payButton.textContent = 'Pay Now';
+        })
+        .finally(() => {
+            // 无论成功失败都执行的清理工作
             restoreUIAfterPayment();
         });
 });
@@ -361,66 +384,83 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         document.addEventListener('DOMContentLoaded', function() {
             updateCartDisplay();
         });
-
-        // 更新购物车显示
         function updateCartDisplay() {
-            const cartList = document.getElementById("cartItems");
-            cartList.innerHTML = "";
-            let total = 0;
+    const cartList = document.getElementById("cartItems");
+    cartList.innerHTML = "";
+    let total = 0;
 
-            cartItems.forEach((item) => {
-                const li = document.createElement("li");
-                li.className = "cart-item";
-                li.innerHTML = `
-                    <img src="${item.main_image}" alt="${item.name}">
-                    <span>${item.name} - $${item.price * item.quantity}<br> 
-                    Size: ${item.size} <br> Color: ${item.color}</span>
-                    <div style="display: flex; align-items: center;">
-                        <button onclick="changeCartQuantity(${item.cart_id}, -1)">-</button>
-                        <span style="margin: 0 10px;">${item.quantity}</span>
-                        <button onclick="changeCartQuantity(${item.cart_id}, 1)">+</button>
-                    </div>
-                    <button onclick="removeFromCart(${item.cart_id})">×</button>
-                `;
-                cartList.appendChild(li);
-                total += item.price * item.quantity;
-            });
+    cartItems.forEach((item) => {
+        const li = document.createElement("li");
+        li.className = "cart-item";
+        li.innerHTML = `
+            <img src="${item.main_image}" alt="${item.name}">
+            <span>${item.name} - $${item.price * item.quantity}<br> 
+            Size: ${item.size} <br> Color: ${item.color}</span>
+            <div style="display: flex; align-items: center;">
+                <button onclick="changeCartQuantity(${item.cart_id}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                <span style="margin: 0 10px;">${item.quantity}</span>
+                <button onclick="changeCartQuantity(${item.cart_id}, 1)">+</button>
+            </div>
+            <button onclick="removeFromCart(${item.cart_id})">×</button>
+        `;
+        cartList.appendChild(li);
+        total += item.price * item.quantity;
+    });
 
-            document.getElementById("cartTotal").textContent = total.toFixed(2);
-            document.getElementById("proceedToPayment").disabled = cartItems.length === 0;
+    document.getElementById("cartTotal").textContent = total.toFixed(2);
+    document.getElementById("proceedToPayment").disabled = cartItems.length === 0;
+}
+function changeCartQuantity(cartId, change) {
+    // Find the item in our local cartItems array
+    const item = cartItems.find(item => item.cart_id == cartId);
+    if (!item) return;
+
+    // Calculate total quantity of this product in cart (all variants)
+    const totalInCart = cartItems
+        .filter(cartItem => cartItem.product_id === item.product_id)
+        .reduce((sum, cartItem) => sum + cartItem.quantity, 0);
+
+    // If increasing quantity, check against total stock
+    if (change > 0) {
+        const available = item.stock - (totalInCart - item.quantity);
+        if (item.quantity >= available) {
+            alert(`Cannot add more than available stock (Max additional: ${available})`);
+            return;
         }
+    }
 
-        // 修改购物车商品数量
-        function changeCartQuantity(cartId, change) {
-            fetch('update_cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        cart_id: cartId,
-                        change: change
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // 更新本地购物车数据
-                        const itemIndex = cartItems.findIndex(item => item.cart_id == cartId);
-                        if (itemIndex !== -1) {
-                            cartItems[itemIndex].quantity = data.newQuantity;
-                            updateCartDisplay();
-                        }
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to update cart');
-                });
-        }
-
+    fetch('update_cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cart_id: cartId,
+                change: change
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update local cart data
+                const itemIndex = cartItems.findIndex(item => item.cart_id == cartId);
+                if (itemIndex !== -1) {
+                    cartItems[itemIndex].quantity = data.newQuantity;
+                    updateCartDisplay();
+                }
+            } else {
+                alert(data.message);
+                // If we got max additional from server, update display
+                if (data.max_additional !== undefined) {
+                    updateCartDisplay();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update cart');
+        });
+}
         // 从购物车移除商品
         function removeFromCart(cartId) {
             if (confirm('Are you sure you want to remove this item from your cart?')) {
