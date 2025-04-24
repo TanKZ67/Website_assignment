@@ -43,6 +43,15 @@ try {
     $stmt->execute([$userId]);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Calculate total quantity for all orders (not just the current page)
+    $totalQuantityStmt = $conn->prepare("
+        SELECT SUM(quantity) as total_quantity 
+        FROM order_history 
+        WHERE user_id = ?
+    ");
+    $totalQuantityStmt->execute([$userId]);
+    $totalQuantity = (int) $totalQuantityStmt->fetch(PDO::FETCH_ASSOC)['total_quantity'];
+
 } catch (Exception $e) {
     echo "Failed to retrieve order history: " . $e->getMessage();
     exit();
@@ -72,6 +81,7 @@ try {
             text-decoration: underline;
             background-color: #eee;
         }
+        .total-quantity { text-align: right; width: 90%; margin: 10px auto; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -80,6 +90,7 @@ try {
     <?php if (count($orders) > 0): ?>
         <table>
             <tr>
+                <th>No.</th>
                 <th>Order ID</th>
                 <th>Product</th>
                 <th>Quantity</th>
@@ -88,8 +99,13 @@ try {
                 <th>Total</th>
                 <th>Paid At</th>
             </tr>
-            <?php foreach ($orders as $order): ?>
+            <?php
+            // Calculate the starting number for the current page
+            $startNumber = ($page - 1) * $recordsPerPage + 1;
+            $counter = $startNumber;
+            foreach ($orders as $order): ?>
             <tr>
+                <td><?= $counter++ ?></td>
                 <td><?= htmlspecialchars($order['order_id']) ?></td>
                 <td><?= htmlspecialchars($order['product_name']) ?></td>
                 <td><?= htmlspecialchars($order['quantity']) ?></td>
@@ -100,6 +116,10 @@ try {
             </tr>
             <?php endforeach; ?>
         </table>
+        <!-- Display total quantity for all orders -->
+        <div class="total-quantity">
+            Total Quantity (All Orders): <?= $totalQuantity ?>
+        </div>
     <?php else: ?>
         <p class="no-orders">You have no orders yet.</p>
     <?php endif; ?>
