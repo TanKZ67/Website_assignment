@@ -328,68 +328,6 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
             updateCartDisplay(); // Refresh the cart display after printing
         }
 
-        document.getElementById('paymentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            if (!validateForm()) {
-                return;
-            }
-
-            const formData = new FormData(this);
-
-            // 显示加载状态
-            const payButton = this.querySelector('button[type="submit"]');
-            payButton.disabled = true;
-            payButton.textContent = 'Processing...';
-
-            fetch('process_payment.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // 支付成功处理
-                        document.getElementById('paymentModal').style.display = 'none';
-                        document.getElementById('successMessage').style.display = 'block';
-                        
-                        
-                        cartItems = [];
-                        updateCartDisplay();
-
-                        // 显示发票
-                        if (data.invoice) {
-                            displayInvoice(data.invoice);
-                        }
-
-                        // 3秒后隐藏成功消息
-                        setTimeout(() => {
-                            document.getElementById('successMessage').style.display = 'none';
-                        }, 3000);
-                    } else {
-                        // 明确的支付失败处理
-                        throw new Error(data.message || "Payment failed");
-                    }
-                })
-                .catch(error => {
-                    // 错误处理
-                    console.error('Payment Error:', error);
-                    alert("Payment failed: " + error.message);
-
-                    // 恢复支付按钮状态
-                    payButton.disabled = false;
-                    payButton.textContent = 'Pay Now';
-                })
-                .finally(() => {
-                    // 无论成功失败都执行的清理工作
-                    restoreUIAfterPayment();
-                });
-        });
         // 全局变量存储购物车项
         let cartItems = <?php echo json_encode($cartItems); ?>;
 
@@ -661,6 +599,56 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return true;
         }
+
+        // 处理表单提交
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            const formData = new FormData(this);
+
+            fetch('process_payment.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('paymentModal').style.display = 'none';
+
+                        // 支付成功后恢复界面交互
+                        restoreUIAfterPayment();
+
+                        // 清空购物车
+                        cartItems = [];
+                        updateCartDisplay();
+
+                        // 显示发票
+                        if (data.invoice) {
+                            displayInvoice(data.invoice);
+                        }
+
+                        setTimeout(() => {
+                            document.getElementById('successMessage').style.display = 'none';
+                        }, 3000);
+                    } else {
+                        alert(data.message || "Payment failed");
+                        // 支付失败也恢复界面交互
+                        restoreUIAfterPayment();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Payment processing error");
+                    // 出错时也恢复界面交互
+                    restoreUIAfterPayment();
+                });
+        });
 
         // 新增函数：支付后恢复UI
         function restoreUIAfterPayment() {
