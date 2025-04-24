@@ -18,7 +18,7 @@ include 'app/lib/query.php';
 <body>
 
     <iframe name="hiddenframe" style="display: none;"></iframe>
-<a href="../LeonPart/Code/index2.php">
+    <a href="../LeonPart/Code/index.php">
     <img src="app/image/importan_icon/giphy.gif" class="img">
     </a>
     <div class="LeftSideBodden">

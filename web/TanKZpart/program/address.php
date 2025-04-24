@@ -20,7 +20,7 @@ include '../app/lib/addressfetch.php';
     <iframe name="hiddenframe" style="display: none;"></iframe>
 
     <div>
-    <a href="../../LeonPart/Code/index2.php">
+    <a href="../../LeonPart/Code/index.php">
     <img src="../app/image/importan_icon/giphy.gif" class="img">
     </a>
         <div class="LeftSideBodden">
