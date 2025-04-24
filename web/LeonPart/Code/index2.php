@@ -2,7 +2,7 @@
 session_start();
 
 // For testing only - remove this in production
-
+$_SESSION['user_id']=43;
 require_once 'db_connection.php';
 ?>
 
@@ -911,7 +911,7 @@ function updateCartDisplay() {
 
         // 重定向到购物车页面
         function showCart() {
-            window.location.href = 'cart.php';
+            window.location.href = 'cart2.php';
         }
 
 
