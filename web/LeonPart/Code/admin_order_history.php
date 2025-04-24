@@ -17,34 +17,47 @@ $offset = ($page - 1) * $recordsPerPage;
 $recordsPerPage = (int) $recordsPerPage;
 $offset = (int) $offset;
 
+// Check for user_id search parameter
+$searchUserId = isset($_GET['user_id']) ? trim($_GET['user_id']) : '';
+$whereClause = '';
+$params = [];
+
+if ($searchUserId !== '') {
+    $whereClause = 'WHERE user_id = ?';
+    $params[] = $searchUserId;
+}
+
 try {
-    // Get total number of orders
+    // Get total number of orders (filtered by user_id if provided)
     $countStmt = $conn->prepare("
         SELECT COUNT(*) as total 
         FROM order_history
+        $whereClause
     ");
-    $countStmt->execute();
+    $countStmt->execute($params);
     $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
     // Calculate total pages
     $totalPages = ceil($totalRecords / $recordsPerPage);
 
-    // Fetch orders for the current page, including color and size
+    // Fetch orders for the current page (filtered by user_id if provided)
     $stmt = $conn->prepare("
         SELECT user_id, order_id, product_name, quantity, price, payment_method, total_amount, paid_at, colour, size 
         FROM order_history 
+        $whereClause
         ORDER BY paid_at DESC
         LIMIT $recordsPerPage OFFSET $offset
     ");
-    $stmt->execute();
+    $stmt->execute($params);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Calculate total quantity for all orders (not just the current page)
+    // Calculate total quantity for filtered orders
     $totalQuantityStmt = $conn->prepare("
         SELECT SUM(quantity) as total_quantity 
         FROM order_history
+        $whereClause
     ");
-    $totalQuantityStmt->execute();
+    $totalQuantityStmt->execute($params);
     $totalQuantity = (int) $totalQuantityStmt->fetch(PDO::FETCH_ASSOC)['total_quantity'];
 
 } catch (PDOException $e) {
@@ -80,6 +93,25 @@ try {
         }
 
         .total-quantity { text-align: right; width: 90%; margin: 10px auto; font-weight: bold; }
+
+        /* Search form styles */
+        .search-form {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-form input[type="text"] {
+            padding: 6px;
+            width: 200px;
+        }
+        .search-form input[type="submit"] {
+            padding: 6px 12px;
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .search-form input[type="submit"]:hover {
+            background-color: #ddd;
+        }
 
         /* Modal styles */
         .modal {
@@ -121,6 +153,14 @@ try {
 <body>
     <h2 style="text-align:center;">All Order History</h2>
 
+    <!-- Search form -->
+    <div class="search-form">
+        <form method="GET" action="">
+            <input type="text" name="user_id" placeholder="Enter User ID" value="<?= htmlspecialchars($searchUserId) ?>">
+            <input type="submit" value="Search">
+        </form>
+    </div>
+
     <!-- Modal -->
     <div id="greetingModal" class="modal">
         <div class="modal-content">
@@ -155,7 +195,7 @@ try {
                 <td><?= htmlspecialchars($order['order_id']) ?></td>
                 <td>
                     <span class="product-name" 
-                          onclick="showModal('<?= htmlspecialchars($order['product_name']) ?>', '<?= htmlspecialchars($order['colur'] ?? 'N/A') ?>', '<?= htmlspecialchars($order['size'] ?? 'N/A') ?>')">
+                          onclick="showModal('<?= htmlspecialchars($order['product_name']) ?>', '<?= htmlspecialchars($order['colour'] ?? 'N/A') ?>', '<?= htmlspecialchars($order['size'] ?? 'N/A') ?>')">
                         <?= htmlspecialchars($order['product_name']) ?>
                     </span>
                 </td>
@@ -167,9 +207,9 @@ try {
             </tr>
             <?php endforeach; ?>
         </table>
-        <!-- Display total quantity for all orders -->
+        <!-- Display total quantity for filtered orders -->
         <div class="total-quantity">
-            Total Quantity (All Orders): <?= $totalQuantity ?>
+            Total Quantity (Filtered Orders): <?= $totalQuantity ?>
         </div>
     <?php else: ?>
         <p class="no-orders">No orders found.</p>
@@ -178,15 +218,15 @@ try {
     <?php if ($totalPages > 1): ?>
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>">« Previous</a>
+                <a href="?page=<?= $page - 1 ?>&user_id=<?= urlencode($searchUserId) ?>">« Previous</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page=<?= $i ?>" class="<?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
+                <a href="?page=<?= $i ?>&user_id=<?= urlencode($searchUserId) ?>" class="<?= $i == $page ? 'active' : '' ?>"><?= $i ?></a>
             <?php endfor; ?>
 
             <?php if ($page < $totalPages): ?>
-                <a href="?page=<?= $page + 1 ?>">Next »</a>
+                <a href="?page=<?= $page + 1 ?>&user_id=<?= urlencode($searchUserId) ?>">Next »</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>
@@ -205,7 +245,6 @@ try {
             "Washed-look sweatshirt": "http://localhost/a/Website_assignment/web/YuchenPart/W1Demo/image/56b2ad109cfc2160a382a80632f4d84c0a4e0a36.avif",
             "Flared Leg Low Jeans": "http://localhost/a/Website_assignment/web/YuchenPart/W1Demo/image/hmgoepprod%20(1).jpg"
         };
-        
 
         function showModal(productName, color, size) {
             // Set color and size
