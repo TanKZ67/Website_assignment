@@ -41,6 +41,13 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-bottom: 1px solid #eee;
         }
 
+        .total-quantity {
+            font-size: 1.1em;
+            text-align: right;
+            margin-top: 10px;
+            color: #666;
+        }
+
         .invoice-header {
             font-weight: bold;
             margin-bottom: 15px;
@@ -258,14 +265,18 @@ $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h1>Shopping Cart</h1>
     <ul id="cartItems"></ul>
     <div class="total">Total: $<span id="cartTotal">0</span></div>
+    <div class="total-quantity">Total Items: <span id="cartQuantity">0</span></div>
     <button onclick="window.location.href = 'index.php'">Continue Shopping</button>
     <button id="proceedToPayment" onclick="openPaymentModal()" disabled>Proceed to Payment</button>
 
     <script>
         // Add these new functions
-function displayInvoice(data) {
-    const invoiceModal = document.getElementById('invoiceModal');
-    const invoiceContent = document.getElementById('invoiceContent');
+        function displayInvoice(data) {
+            const invoiceModal = document.getElementById('invoiceModal');
+            const invoiceContent = document.getElementById('invoiceContent');
+
+           // Calculate total quantity
+    const totalQuantity = data.items.reduce((sum, item) => sum + item.quantity, 0);
     
     // Format the invoice data
     let invoiceHTML = `
@@ -273,110 +284,110 @@ function displayInvoice(data) {
             <p>Order #: ${data.order_id}</p>
             <p>Date: ${new Date(data.order_date).toLocaleString()}</p>
             <p>Payment Method: ${data.payment_method}</p>
+            <p>Total Items: ${totalQuantity}</p>
         </div>
         <div class="invoice-items">
             <h4>Items:</h4>
     `;
-    
-    data.items.forEach(item => {
-        invoiceHTML += `
+            data.items.forEach(item => {
+                invoiceHTML += `
             <div class="invoice-item">
                 <span>${item.name} (${item.quantity} × $${item.price})</span>
                 <span>$${(item.quantity * item.price).toFixed(2)}</span>
             </div>
         `;
-    });
-    
-    invoiceHTML += `
+            });
+
+            invoiceHTML += `
         <div class="invoice-total">
             <p>Total: $${data.total_amount}</p>
         </div>
     `;
-    
-    invoiceContent.innerHTML = invoiceHTML;
-    invoiceModal.style.display = 'block';
-}
 
-function closeInvoiceModal() {
-    document.getElementById('invoiceModal').style.display = 'none';
-}
+            invoiceContent.innerHTML = invoiceHTML;
+            invoiceModal.style.display = 'block';
+        }
 
-function printInvoice() {
-    const invoiceContent = document.getElementById('invoiceContent').innerHTML;
-    const originalContent = document.body.innerHTML;
-    
-    document.body.innerHTML = `
+        function closeInvoiceModal() {
+            document.getElementById('invoiceModal').style.display = 'none';
+        }
+
+        function printInvoice() {
+            const invoiceContent = document.getElementById('invoiceContent').innerHTML;
+            const originalContent = document.body.innerHTML;
+
+            document.body.innerHTML = `
         <div style="width: 80%; margin: 0 auto; padding: 20px;">
             <h2 style="text-align: center;">Order Invoice</h2>
             ${invoiceContent}
         </div>
     `;
-    
-    window.print();
-    document.body.innerHTML = originalContent;
-    updateCartDisplay(); // Refresh the cart display after printing
-}
 
-document.getElementById('paymentForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+            window.print();
+            document.body.innerHTML = originalContent;
+            updateCartDisplay(); // Refresh the cart display after printing
+        }
 
-    if (!validateForm()) {
-        return;
-    }
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    const formData = new FormData(this);
-    
-    // 显示加载状态
-    const payButton = this.querySelector('button[type="submit"]');
-    payButton.disabled = true;
-    payButton.textContent = 'Processing...';
-
-    fetch('process_payment.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            if (!validateForm()) {
+                return;
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // 支付成功处理
-                document.getElementById('paymentModal').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
-                cartItems = [];
-                updateCartDisplay();
-                
-                // 显示发票
-                if (data.invoice) {
-                    displayInvoice(data.invoice);
-                }
-                
-                // 3秒后隐藏成功消息
-                setTimeout(() => {
-                    document.getElementById('successMessage').style.display = 'none';
-                }, 3000);
-            } else {
-                // 明确的支付失败处理
-                throw new Error(data.message || "Payment failed");
-            }
-        })
-        .catch(error => {
-            // 错误处理
-            console.error('Payment Error:', error);
-            alert("Payment failed: " + error.message);
-            
-            // 恢复支付按钮状态
-            payButton.disabled = false;
-            payButton.textContent = 'Pay Now';
-        })
-        .finally(() => {
-            // 无论成功失败都执行的清理工作
-            restoreUIAfterPayment();
+
+            const formData = new FormData(this);
+
+            // 显示加载状态
+            const payButton = this.querySelector('button[type="submit"]');
+            payButton.disabled = true;
+            payButton.textContent = 'Processing...';
+
+            fetch('process_payment.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // 支付成功处理
+                        document.getElementById('paymentModal').style.display = 'none';
+                        document.getElementById('successMessage').style.display = 'block';
+                        cartItems = [];
+                        updateCartDisplay();
+
+                        // 显示发票
+                        if (data.invoice) {
+                            displayInvoice(data.invoice);
+                        }
+
+                        // 3秒后隐藏成功消息
+                        setTimeout(() => {
+                            document.getElementById('successMessage').style.display = 'none';
+                        }, 3000);
+                    } else {
+                        // 明确的支付失败处理
+                        throw new Error(data.message || "Payment failed");
+                    }
+                })
+                .catch(error => {
+                    // 错误处理
+                    console.error('Payment Error:', error);
+                    alert("Payment failed: " + error.message);
+
+                    // 恢复支付按钮状态
+                    payButton.disabled = false;
+                    payButton.textContent = 'Pay Now';
+                })
+                .finally(() => {
+                    // 无论成功失败都执行的清理工作
+                    restoreUIAfterPayment();
+                });
         });
-});
         // 全局变量存储购物车项
         let cartItems = <?php echo json_encode($cartItems); ?>;
 
@@ -384,10 +395,12 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         document.addEventListener('DOMContentLoaded', function() {
             updateCartDisplay();
         });
+
         function updateCartDisplay() {
     const cartList = document.getElementById("cartItems");
     cartList.innerHTML = "";
     let total = 0;
+    let totalQuantity = 0; // Add this line to track total quantity
 
     cartItems.forEach((item) => {
         const li = document.createElement("li");
@@ -405,62 +418,65 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         `;
         cartList.appendChild(li);
         total += item.price * item.quantity;
+        totalQuantity += item.quantity; // Add this line to sum quantities
     });
 
     document.getElementById("cartTotal").textContent = total.toFixed(2);
+    document.getElementById("cartQuantity").textContent = totalQuantity; // Add this line to update quantity display
     document.getElementById("proceedToPayment").disabled = cartItems.length === 0;
 }
-function changeCartQuantity(cartId, change) {
-    // Find the item in our local cartItems array
-    const item = cartItems.find(item => item.cart_id == cartId);
-    if (!item) return;
 
-    // Calculate total quantity of this product in cart (all variants)
-    const totalInCart = cartItems
-        .filter(cartItem => cartItem.product_id === item.product_id)
-        .reduce((sum, cartItem) => sum + cartItem.quantity, 0);
+        function changeCartQuantity(cartId, change) {
+            // Find the item in our local cartItems array
+            const item = cartItems.find(item => item.cart_id == cartId);
+            if (!item) return;
 
-    // If increasing quantity, check against total stock
-    if (change > 0) {
-        const available = item.stock - (totalInCart - item.quantity);
-        if (item.quantity >= available) {
-            alert(`Cannot add more than available stock (Max additional: ${available})`);
-            return;
-        }
-    }
+            // Calculate total quantity of this product in cart (all variants)
+            const totalInCart = cartItems
+                .filter(cartItem => cartItem.product_id === item.product_id)
+                .reduce((sum, cartItem) => sum + cartItem.quantity, 0);
 
-    fetch('update_cart.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                cart_id: cartId,
-                change: change
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update local cart data
-                const itemIndex = cartItems.findIndex(item => item.cart_id == cartId);
-                if (itemIndex !== -1) {
-                    cartItems[itemIndex].quantity = data.newQuantity;
-                    updateCartDisplay();
-                }
-            } else {
-                alert(data.message);
-                // If we got max additional from server, update display
-                if (data.max_additional !== undefined) {
-                    updateCartDisplay();
+            // If increasing quantity, check against total stock
+            if (change > 0) {
+                const available = item.stock - (totalInCart - item.quantity);
+                if (item.quantity >= available) {
+                    alert(`Cannot add more than available stock (Max additional: ${available})`);
+                    return;
                 }
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update cart');
-        });
-}
+
+            fetch('update_cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        cart_id: cartId,
+                        change: change
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update local cart data
+                        const itemIndex = cartItems.findIndex(item => item.cart_id == cartId);
+                        if (itemIndex !== -1) {
+                            cartItems[itemIndex].quantity = data.newQuantity;
+                            updateCartDisplay();
+                        }
+                    } else {
+                        alert(data.message);
+                        // If we got max additional from server, update display
+                        if (data.max_additional !== undefined) {
+                            updateCartDisplay();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to update cart');
+                });
+        }
         // 从购物车移除商品
         function removeFromCart(cartId) {
             if (confirm('Are you sure you want to remove this item from your cart?')) {

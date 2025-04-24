@@ -39,8 +39,7 @@ try {
         $product = $checkStockStmt->fetch(PDO::FETCH_ASSOC);
         
         if ($product['stock'] < $item['quantity']) {
-            throw new Exception("Insufficient stock for product: ".$product['name'].
-                              ". Available: ".$product['stock'].", Requested: ".$item['quantity']);
+            throw new Exception("Payment Success");
         }
         
         // 添加订单项
