@@ -1,3 +1,5 @@
+
+
 <?php
 session_start();
 require_once 'db_connection.php';
@@ -35,8 +37,8 @@ try {
                                    VALUES (?, ?, ?, ?, ?, ?, ?)");
     
     $historyStmt = $conn->prepare("INSERT INTO order_history 
-                                   (order_id, user_id, product_name, quantity, price, payment_method, total_amount, paid_at) 
-                                   VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+   (order_id, user_id, product_name, quantity, price, payment_method, total_amount, paid_at, colour, size) 
+   VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
     
     $updateStockStmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
     $checkStockStmt = $conn->prepare("SELECT stock, name FROM products WHERE id = ? FOR UPDATE");
@@ -68,7 +70,9 @@ try {
             $item['quantity'],
             $item['price'],
             $_POST['payment_method'],
-            $_POST['total_amount']
+            $_POST['total_amount'],
+            $item['color'],
+            $item['size']
         ]);
 
         $updateStockStmt->execute([
