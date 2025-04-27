@@ -70,6 +70,9 @@ include '../app/lib/addressfetch.php';
                                 <a href="../app/lib/addressfetchbyaddressid.php?edit=<?php echo $addrow['address_id']; ?>" class="edit" id="edit"> Edit</a>
                             </td>
                             <td>
+                                <a href="../app/lib/addressfetchbyaddressiddelete.php?edit=<?php echo $addrow['address_id']; ?>" class="delete" id="edit"> Delete</a>
+                            </td>
+                            <td>
                                 <p class="addname"><?php echo $addrow["address_name"]; ?></p>
                             </td>
                             <td>

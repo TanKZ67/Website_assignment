@@ -16,6 +16,7 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
 
 
         $user_account = $row['username'];
+        $user_account_old = $row['username'];
         $password_hash = $row['password_hash'];
         $gender = $row['gender'];
         $date_of_birth = $row['date_of_birth'];
@@ -23,9 +24,9 @@ if (isset($_GET['token']) && isset($_GET['email'])) {
         $imagePath = $row['picture'];
 
 
-        $stmt_insert = $conn->prepare("INSERT INTO user_profile (user_account, email, password_hash, gender, date_of_birth, phone_number, picture) " .
-            "VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt_insert->bind_param("sssssss", $user_account, $email, $password_hash, $gender, $date_of_birth, $phone_number, $imagePath);
+        $stmt_insert = $conn->prepare("INSERT INTO user_profile (user_account,user_account_old, email, password_hash, gender, date_of_birth, phone_number, picture) " .
+            "VALUES (?,?, ?, ?, ?, ?, ?, ?)");
+        $stmt_insert->bind_param("ssssssss", $user_account,$user_account_old, $email, $password_hash, $gender, $date_of_birth, $phone_number, $imagePath);
         $stmt_insert->execute();
 
         $stmt_delete = $conn->prepare("DELETE FROM pending_users WHERE email = ?");

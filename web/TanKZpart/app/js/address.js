@@ -30,3 +30,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 })
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete").forEach(button => {
+        button.addEventListener("click", function () {
+            // 获取按钮的 data-id 属性，作为地址 ID
+            const addressId = button.getAttribute("data-addid");
+
+            // 打开编辑层
+            document.getElementById("layerA1").style.display = "block";
+
+        });
+    });
+})

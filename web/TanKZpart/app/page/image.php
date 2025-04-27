@@ -6,7 +6,7 @@ $user_id = $_SESSION["user_id"];
 
 $picture=$_FILES["picture"]["name"];
 $image_tmp=$_FILES["picture"]["tmp_name"];
-$image_folder = "../../Devonpart/web/uploads/" . $picture;
+$image_folder = "../../../Devonpart/web/uploads/" . $picture;
 
 
 if (move_uploaded_file($image_tmp, $image_folder)) {

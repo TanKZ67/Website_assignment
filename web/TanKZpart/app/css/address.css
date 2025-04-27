@@ -134,9 +134,9 @@ margin-top: -15px;
 }
 
 .edit{
-    position: absolutey;
-    left: 700px;
-    top: 9px;
+    
+
+    margin-top: 5px;
     border: none;       
     color: blue;
     background-color: white;
@@ -144,10 +144,10 @@ margin-top: -15px;
 }
 
 .delete{
-    position: absolute;
-    RIGHT: 2px;
-    top: 9px;
-    border: none;       
+    
+    margin-left: 27px;
+    margin-top: 5px;
+    border: none;
     color: blue;
     background-color: white;
     cursor: pointer;
