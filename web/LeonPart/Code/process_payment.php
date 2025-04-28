@@ -32,7 +32,7 @@ try {
     
     // 准备插入 order_history 表的语句
     $historyStmt = $conn->prepare("INSERT INTO order_history 
-   (order_id, user_id, product_name, quantity, price, payment_method, total_amount, paid_at, colour, size) 
+   (order_id, user_id, product_name, quantity, price, payment_method, total_amount, paid_at, color, size) 
    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
     
     $updateStockStmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
