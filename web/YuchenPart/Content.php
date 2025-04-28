@@ -16,7 +16,7 @@
             <input id="Password" name="password" type="password" placeholder="Enter password" required>
             <span id="passwordError" style="color: red;"></span>
             <h5 id="speciala"><a href="../Devonpart/web/register.php">Don't have account yet?</a></h5>
-            <h5 id="special"><a href="testing.php">Forgot password?</a></h5>
+            <h5 id="special"><a href="Email_Verification.php">Forgot password?</a></h5>
         </form>
         <button id="LOGINbutton"> Log in</button>
 
