@@ -11,8 +11,10 @@ document.getElementById("PhoneNumberSubmit").addEventListener("click", function 
 });
 
 document.getElementById("comfirmNoEmail").addEventListener("click", function (event) {
-    event.preventDefault();
+
     document.getElementById("layerEM1").style.display = "none";
+    document.getElementById("emailOTP").style.display = "none";
+    event.preventDefault();
 });
 
 document.getElementById("comfirmNoPN").addEventListener("click", function (event) {

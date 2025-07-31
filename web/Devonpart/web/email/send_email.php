@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $body = "Hi $username, <br><br> We noticed a device has logged into your member account. If this was not you, please change your password immediately.";
                 send_email($email, $subject, $body); 
 
-                header("Location: ../../LeonPart/Code/index2.php");
+                header("Location: ../../LeonPart/Code/index.php");
                 exit();
             } else {
                 echo "";

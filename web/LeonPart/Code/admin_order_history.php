@@ -42,7 +42,7 @@ try {
 
     // Fetch orders for the current page (filtered by user_id if provided)
     $stmt = $conn->prepare("
-        SELECT user_id, order_id, product_name, quantity, price, payment_method, total_amount, paid_at, colour, size 
+        SELECT user_id, order_id, product_name, quantity, price, payment_method, total_amount, paid_at, color, size 
         FROM order_history 
         $whereClause
         ORDER BY paid_at DESC
@@ -195,7 +195,7 @@ try {
                 <td><?= htmlspecialchars($order['order_id']) ?></td>
                 <td>
                     <span class="product-name" 
-                          onclick="showModal('<?= htmlspecialchars($order['product_name']) ?>', '<?= htmlspecialchars($order['colour'] ?? 'N/A') ?>', '<?= htmlspecialchars($order['size'] ?? 'N/A') ?>')">
+                          onclick="showModal('<?= htmlspecialchars($order['product_name']) ?>', '<?= htmlspecialchars($order['color'] ?? 'N/A') ?>', '<?= htmlspecialchars($order['size'] ?? 'N/A') ?>')">
                         <?= htmlspecialchars($order['product_name']) ?>
                     </span>
                 </td>
